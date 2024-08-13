@@ -1,0 +1,5 @@
+The term dynamic programming (DP) refers to a collection of algorithms that can be used to compute optimal policies given a perfect model of the environment as a Markov decision process (MDP).
+
+2 Drawbacks of Dynamic Programming: Assumption of a perfect model. Great computational expense.
+
+The key idea of DP, and of reinforcement learning generally, is the use of value functions to organize and structure the search for good policies.

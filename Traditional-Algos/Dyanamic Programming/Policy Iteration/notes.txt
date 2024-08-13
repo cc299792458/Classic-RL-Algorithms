@@ -1,0 +1,11 @@
+Policy Evaluation as a System of Linear Equations
+
+V = R + gamma P V
+
+(I - gamma P) V = R
+
+Solving the System:
+1. Iterative Methods
+2. Exact Solution
+
+Policy Improvement Theorem
