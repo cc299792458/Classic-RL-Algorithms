@@ -100,83 +100,13 @@ class PolicyIteration:
             is_optimal = self.policy_improvement(print_flag=impro_print_flag)
 
     def print_value_function(self):
-        if isinstance(self.env, GridWorld):
-            self._print_gridworld_value_function()
+        if hasattr(self.env, '_print_value_function'):
+            self.env._print_value_function(self.value_function)
         else:
             print(self.value_function)
 
     def print_policy(self):
-        if isinstance(self.env, GridWorld):
-            self._print_gridworld_policy()
+        if hasattr(self.env, '_print_policy'):
+            self.env._print_policy(self.policy)
         else:
             print(self.policy)
-
-    def _print_gridworld_value_function(self):
-        grid_size = self.env.grid_size
-        max_value = max(self.value_function)
-        min_value = min(self.value_function)
-        max_width = max(len(f"{max_value:.2f}"), len(f"{min_value:.2f}"))  # Ensure consistent width for alignment
-
-        for i in range(grid_size):
-            row_values = []
-            for j in range(grid_size):
-                value = self.value_function[i * grid_size + j]
-                row_values.append(f"{value:>{max_width}.2f}")  # Align values by setting a consistent column width
-            print(" | ".join(row_values))  # Use " | " as a separator between columns
-            if i < grid_size - 1:
-                print("-" * (max_width * grid_size + (grid_size - 1) * 3))  # Print separator line between rows
-
-    def _print_gridworld_policy(self):
-        grid_size = self.env.grid_size
-        policy_arrows = {0: '↑', 1: '↓', 2: '←', 3: '→'}  # Corrected action to arrow mapping
-        max_width = 4  # Define a fixed width for each cell to accommodate up to 4 arrows
-        
-        for i in range(grid_size):
-            row_policy = []
-            for j in range(grid_size):
-                state = i * grid_size + j
-                if self.env.is_terminal_state(state):
-                    cell_content = 'T'.center(max_width)  # Center 'T' within the fixed width
-                else:
-                    best_actions = np.argwhere(self.policy[state] == np.max(self.policy[state])).flatten()
-                    arrows = ''.join([policy_arrows[action] for action in best_actions])
-                    cell_content = arrows.center(max_width)  # Center arrows within the fixed width
-                row_policy.append(cell_content)
-            
-            # Join the row content with ' | ' separator
-            print(" | ".join(row_policy))
-            
-            if i < grid_size - 1:
-                print("-" * (max_width * grid_size + (grid_size - 1) * 3))  # Print separator line between rows
-
-
-
-if __name__ == '__main__':
-    ##### Step 0: Build Environment and Initiate Policy #####
-    env = GridWorld()
-
-    theta = 1e-4
-    agent = PolicyIteration(env=env, theta=theta)
-
-    ##### Step 1: Try Policy Evaluation with a Random Policy #####
-    ### Step 1.1: Update value function inplacely ---> 114 iterations
-    inplace = True
-    agent.policy_evaluation(inplace=inplace, print_each_iter=True)
-    
-    ### Step 1.2: Update value function non-inplacely ---> 173 iterations
-    agent.reset()
-    inplace = False
-    agent.policy_evaluation(inplace=inplace, print_each_iter=True)
-
-    #### Step 2: Get the Optimal Policy using Policy Iteration #####
-    ## Step 2.1 Record iterations ###
-    agent.reset()
-    agent.iterate(eval_print_flag=True, impro_print_flag=True)  # 3 iterations
-    
-    ### Step 2.2 Record time consuming ###
-    import time
-    agent.reset()
-    start_time = time.time()
-    agent.iterate()
-    end_time = time.time()
-    print(f"Time consuming: {end_time-start_time}") # about 9e-3 seconds
