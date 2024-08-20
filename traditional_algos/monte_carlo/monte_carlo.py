@@ -1,23 +1,26 @@
+"""
+    Monte Carlo Method
+"""
+
 import numpy as np
 import gymnasium as gym
 
-from envs import GridWorld
-
 class MonteCarlo:
-    def __init__(self, env: gym.Env, gamma=1.0, epsilon=0.0) -> None:
+    def __init__(self, env: gym.Env, gamma=1.0, epsilon=0.0, initial_policy=None) -> None:
         self.env = env
         self.gamma = gamma
         self.epsilon = epsilon
         self.num_state = self.env.observation_space.n
         self.num_action = self.env.action_space.n
 
+        self.initial_policy = initial_policy
         self.reset()
 
     def reset(self):
         """
             Reset the policy to a uniform random policy and reset the value and Q functions.
         """
-        self.policy = np.ones([self.num_state, self.num_action]) / self.num_action
+        self.policy = self.initial_policy or np.ones([self.num_state, self.num_action]) / self.num_action
         self.value_function = np.zeros(self.num_state)
         self.Q = np.zeros((self.num_state, self.num_action))  # Action-value function
         # For Monte Carlo, we need to track returns

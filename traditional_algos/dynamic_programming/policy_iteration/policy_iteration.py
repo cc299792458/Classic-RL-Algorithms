@@ -1,7 +1,9 @@
+"""
+    Policy Iteration
+"""
+
 import numpy as np
 import gymnasium as gym
-
-from envs.grid_world import GridWorld
 
 class PolicyIteration:
     def __init__(self, env: gym.Env, gamma=1.0, theta=1e-6) -> None:

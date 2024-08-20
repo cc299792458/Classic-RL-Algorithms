@@ -1,9 +1,15 @@
+"""
+    Use Monte Carlo Method to Solve a 4 x 4 GridWorld
+"""
+
 import time
 
+from utils.misc_utils import set_seed
 from envs.grid_world import GridWorld
 from traditional_algos.monte_carlo.monte_carlo import MonteCarlo
 
 if __name__ == '__main__':
+    set_seed()
     ##### Step 0: Build GridWorld environment and initiate policy #####
     env = GridWorld(grid_size=4)
     agent = MonteCarlo(env=env)
@@ -42,5 +48,5 @@ if __name__ == '__main__':
         agent.print_policy()
         print("\n")
     
-    ##### Step 4: Try off-policy monte carlo via importance sampling #####
+    ##### TODO: Step 4: Try off-policy monte carlo via importance sampling #####
     

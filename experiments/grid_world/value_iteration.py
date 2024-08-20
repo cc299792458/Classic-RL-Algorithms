@@ -1,9 +1,15 @@
+"""
+    Use Value Iteration to Solve a 4 x 4 GridWorld
+"""
+
 import time
 
+from utils.misc_utils import set_seed
 from envs.grid_world import GridWorld
 from traditional_algos.dynamic_programming.value_iteration.value_iteration import ValueIteration
 
 if __name__ == '__main__':
+    set_seed()
     ##### Step 0: Build Environment and Initiate Policy #####
     env = GridWorld()
 
