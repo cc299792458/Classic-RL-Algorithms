@@ -20,7 +20,9 @@ class KArmedBandit(gym.Env):
     def reset(self):
         self.time_step = 0
         # Reinitialize the reward means for each arm
-        self.reward_means = np.random.uniform(0, 1, self.k)
+        # TODO: Why the variance increases when using uniform sampling?
+        # self.reward_means = np.random.uniform(-1, 1, self.k)
+        self.reward_means = np.random.randn(self.k)
         
         return 0  # No meaningful observation, return arbitrary
     
@@ -38,6 +40,10 @@ class KArmedBandit(gym.Env):
         # Render the current reward means and time step (for debugging purposes)
         print(f"Current reward means: {self.reward_means}")
         print(f"Time step: {self.time_step}/{self.max_time_steps}")
+
+    @property
+    def optimal_actions(self):
+        return np.flatnonzero(self.reward_means == np.max(self.reward_means))
     
 if __name__ == '__main__':
     env = KArmedBandit(k=10, max_time_steps=1000)
