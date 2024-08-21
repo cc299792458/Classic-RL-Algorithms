@@ -6,32 +6,7 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 from envs import KArmedBandit
 from utils.misc_utils import set_seed
-
-class EpsilonGreedy:
-    def __init__(self, env: gym.Env, epsilon=0.1):
-        self.env = env
-        self.epsilon = epsilon
-
-        self.n_actions = env.action_space.n
-        self.reset()
-        
-    def reset(self):
-        self.q_values = np.zeros(self.n_actions)
-        self.action_counts = np.zeros(self.n_actions)
-
-
-    def select_action(self):
-        if np.random.rand() < self.epsilon:
-            return self.env.action_space.sample()
-        else:
-            return np.argmax(self.q_values)
-        
-    def update_q_values(self, action, reward):
-        self.action_counts[action] += 1
-        self.q_values[action] += (reward - self.q_values[action]) / self.action_counts[action]
-    
-    def set_epsilon(self, epsilon):
-        self.epsilon = epsilon
+from traditional_algos.epsilon_greedy import EpsilonGreedy
     
 if __name__ == '__main__':
     set_seed()
