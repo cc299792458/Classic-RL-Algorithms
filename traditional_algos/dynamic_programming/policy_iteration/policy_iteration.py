@@ -36,7 +36,7 @@ class PolicyIteration:
                 v = 0
                 # Calculate the expected value for the current state under the policy
                 for action, action_prob in enumerate(self.policy[state]):
-                    for prob, next_state, reward, done in self.env.P[state][action]:
+                    for prob, next_state, reward, terminated, truncated in self.env.P[state][action]:
                         v += action_prob * prob * (reward + self.gamma * self.value_function[next_state])
                 
                 delta = max(delta, np.abs(v - self.value_function[state]))
@@ -70,7 +70,7 @@ class PolicyIteration:
 
             q = np.zeros(self.env.action_space.n)
             for action in range(self.env.action_space.n):
-                for prob, next_state, reward, done in self.env.P[state][action]:
+                for prob, next_state, reward, terminated, truncated in self.env.P[state][action]:
                     q[action] += prob * (reward + self.gamma * self.value_function[next_state])
                     
             max_q_value = np.max(q)

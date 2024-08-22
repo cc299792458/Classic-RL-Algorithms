@@ -38,8 +38,9 @@ if __name__ == '__main__':
         done = False
         while not done:
             action = sample_avg_policy.select_action()
-            _, reward, done, _ = env.step(action)
-            
+            _, reward, terminated, truncated, _ = env.step(action)
+            done = terminated or truncated
+
             rewards.append(reward)
             optimal_action_selections.append(1 if action in env.optimal_actions else 0)
 
@@ -59,8 +60,9 @@ if __name__ == '__main__':
         done = False
         while not done:
             action = const_step_policy.select_action()
-            _, reward, done, _ = env.step(action)
-            
+            _, reward, terminated, truncated, _ = env.step(action)
+            done = terminated or truncated
+
             rewards.append(reward)
             optimal_action_selections.append(1 if action in env.optimal_actions else 0)
 

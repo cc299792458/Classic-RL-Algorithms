@@ -24,7 +24,7 @@ class GridWorld(gym.Env):
 
     def _create_transition_matrix(self):
         """
-        Create the transition matrix P[state][action] -> [(probability, next_state, reward, done)]
+        Create the transition matrix P[state][action] -> [(probability, next_state, reward, terminated)]
         """
         P = {}
         for x in range(self.grid_size):
@@ -45,11 +45,11 @@ class GridWorld(gym.Env):
                         new_y = min(y + 1, self.grid_size - 1)
                     
                     next_state = new_x * self.grid_size + new_y
-                    done = self.is_terminal_state(next_state)
+                    terminated = self.is_terminal_state(next_state)
                     reward = -1  # Constant reward for each step
                     
                     # Add this transition to the P dictionary
-                    P[state][action].append((1.0, next_state, reward, done))
+                    P[state][action].append((1.0, next_state, reward, terminated))
                     
         return P
     
@@ -62,18 +62,17 @@ class GridWorld(gym.Env):
         """
         self.position = np.random.randint(self.observation_space.n)
         self.current_step = 0
-        return self.position
+        return self.position, {}
 
     def step(self, action):
         self.current_step += 1
         transitions = self.P[self.position][action]
-        prob, next_state, reward, done = transitions[0]  # Since deterministic, only one transition
+        prob, next_state, reward, terminated = transitions[0]  # Since deterministic, only one transition
         self.position = next_state
-        if self.current_step >= self.max_episode_length:
-            done = True
+        truncated = self.current_step >= self.max_episode_length
         info = {'terminal': self.is_terminal_state(next_state)}
 
-        return self.position, reward, done, info
+        return self.position, reward, terminated, truncated, info
 
     def render(self):
         # Create an empty grid
@@ -171,6 +170,6 @@ if __name__ == '__main__':
     env = GridWorld()
     env.reset()
     env.render()
-    state, reward, done, info = env.step(3)  # Example action: move right
+    state, reward, terminated, truncated, info = env.step(3)  # Example action: move right
     env.render()
-    print(f"Info: {info}")
+    print(f"Terminated: {terminated}, Truncated: {truncated}, Info: {info}")

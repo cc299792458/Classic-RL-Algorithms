@@ -35,7 +35,7 @@ class ValueIteration:
             
                 q = np.zeros(self.env.action_space.n)
                 for action in range(self.env.action_space.n):
-                    for prob, next_state, reward, done in self.env.P[state][action]:
+                    for prob, next_state, reward, terminated in self.env.P[state][action]:
                         q[action] += prob * (reward + self.gamma * self.value_function[next_state])
                 
                 v = np.max(q)
@@ -61,7 +61,7 @@ class ValueIteration:
 
                     q = np.zeros(self.env.action_space.n)
                     for action in range(self.env.action_space.n):
-                        for prob, next_state, reward, done in self.env.P[state][action]:
+                        for prob, next_state, reward, terminated in self.env.P[state][action]:
                             q[action] += prob * (reward + self.gamma * self.value_function[next_state])
 
                     best_actions = np.argwhere(np.abs(q - np.max(q)) <= tolerance).flatten()
