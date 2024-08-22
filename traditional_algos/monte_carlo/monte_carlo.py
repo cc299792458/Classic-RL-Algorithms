@@ -6,7 +6,7 @@ import numpy as np
 import gymnasium as gym
 
 class MonteCarlo:
-    def __init__(self, env: gym.Env, gamma=1.0, epsilon=0.0, initial_policy=None) -> None:
+    def __init__(self, env: gym.Env, gamma=1.0, epsilon=0.1, initial_policy=None) -> None:
         self.env = env
         self.gamma = gamma
         self.epsilon = epsilon

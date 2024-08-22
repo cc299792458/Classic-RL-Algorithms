@@ -6,13 +6,13 @@ import time
 
 from utils.misc_utils import set_seed
 from envs.grid_world import GridWorld
-from traditional_algos.monte_carlo.monte_carlo import MonteCarlo
+from traditional_algos.monte_carlo import MonteCarlo
 
 if __name__ == '__main__':
     set_seed()
     ##### Step 0: Build GridWorld environment and initiate policy #####
     env = GridWorld(grid_size=4)
-    agent = MonteCarlo(env=env)
+    agent = MonteCarlo(env=env, epsilon=0.0)
     num_episodes = [1, 10, 50, 100, 200, 500, 1000, 5000, 10000, 50000, 100000]
 
     # ##### Step 1: Try monte carlo prediction to estimate the value function #####
