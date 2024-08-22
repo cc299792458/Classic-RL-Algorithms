@@ -6,7 +6,7 @@ import numpy as np
 import gymnasium as gym
 
 from tqdm import tqdm
-from utils.misc_utils import get_observation_shape
+from utils.gym_utils import get_observation_shape
 
 class MonteCarlo:
     def __init__(self, env: gym.Env, gamma=1.0, epsilon=0.1, initial_policy=None) -> None:

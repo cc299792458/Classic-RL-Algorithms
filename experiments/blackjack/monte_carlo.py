@@ -2,13 +2,15 @@
     Use Monte Carlo Method to solve Black Jack
 """
 
+import os
 import numpy as np
 import gymnasium as gym
 import matplotlib.pylab as plt
 
 from mpl_toolkits.mplot3d import Axes3D
+from utils.misc_utils import set_seed
+from utils.gym_utils import get_observation_shape
 from traditional_algos.monte_carlo import MonteCarlo
-from utils.misc_utils import set_seed, get_observation_shape
 
 def create_initial_policy(env):
     """
@@ -36,7 +38,7 @@ def create_initial_policy(env):
 
     return policy
 
-def plot_value_function(value_function, usable_ace, title):
+def plot_value_function(value_function, usable_ace, title, save_path=None):
     """
     Plot the value function as a 3D surface plot.
     
@@ -44,18 +46,19 @@ def plot_value_function(value_function, usable_ace, title):
         value_function: The state-value function to plot.
         usable_ace: Whether to plot the values with a usable ace or without.
         title: The title for the plot.
+        save_path: If provided, save the plot to this path.
     """
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 
-    # Player sum ranges from 12 to 21 (index 8 to 17)
+    # Player sum ranges from 12 to 21
     x = np.arange(12, 22)
-    # Dealer's showing card ranges from 1 to 10 (index 1 to 10)
+    # Dealer's showing card ranges from 1 to 10
     y = np.arange(1, 11)
     X, Y = np.meshgrid(x, y)
 
     # Extract the corresponding part of the value function
-    Z = np.array([[value_function[player_sum - 12, dealer_card - 1, usable_ace] 
+    Z = np.array([[value_function[player_sum, dealer_card, usable_ace] 
                    for player_sum in x] for dealer_card in y])
 
     ax.plot_surface(X, Y, Z, cmap='viridis')
@@ -65,24 +68,85 @@ def plot_value_function(value_function, usable_ace, title):
     ax.set_zlabel('Value')
     ax.set_title(title)
 
+    if save_path:
+        plt.savefig(save_path)
+
     plt.show()
+
+def plot_policy(policy, usable_ace, title, save_path=None):
+    """
+    Plot the optimal policy as a 2D heatmap.
+    
+    Args:
+        policy: The policy to plot.
+        usable_ace: Whether to plot the policy with a usable ace or without.
+        title: The title for the plot.
+        save_path: If provided, save the plot to this path.
+    """
+    fig, ax = plt.subplots(figsize=(8, 6))  # Adjust the figure size as needed
+
+    # Player sum ranges from 12 to 21
+    y = np.arange(12, 22)
+    # Dealer's showing card ranges from 1 to 10
+    x = np.arange(1, 11)
+    X, Y = np.meshgrid(x, y)
+
+    # Extract the corresponding part of the policy
+    Z = np.array([[np.argmax(policy[player_sum, dealer_card, usable_ace]) 
+                   for dealer_card in x] for player_sum in y])
+
+    cax = ax.matshow(Z, cmap='coolwarm')
+
+    fig.colorbar(cax)
+
+    ax.set_xticks(np.arange(len(x)))
+    ax.set_yticks(np.arange(len(y)))
+    ax.set_xticklabels(x)
+    ax.set_yticklabels(y[::-1])  # Invert the y-axis to reverse the player sum order
+    
+    ax.set_xlabel('Dealer Showing')
+    ax.set_ylabel('Player Sum')
+    ax.set_title(title, pad=20)  # Increase pad to move title up
+
+    # Adjust layout to ensure everything fits
+    plt.tight_layout(rect=[0, 0, 1, 0.95])  # Make room for the title
+
+    if save_path:
+        plt.savefig(save_path, bbox_inches='tight')  # Ensure the title is saved correctly
+
+    plt.show()
+
 if __name__ == '__main__':
     set_seed()
+    log_dir = os.path.dirname(os.path.abspath(__file__))
     ##### 0. Load environment and initiate policy #####
     env = gym.make('Blackjack-v1', natural=False, sab=True)
 
     initial_policy = create_initial_policy(env)
     policy = MonteCarlo(env=env, initial_policy=initial_policy)
 
-    ##### Step 1: Try monte carlo prediction to estimate the value function #####
-    num_episode = 500_000
-    policy.prediction(num_episode=num_episode)
+    # ##### Step 1: Try monte carlo prediction to estimate the value function #####
+    # num_episode = 500_000
+    # policy.prediction(num_episode=num_episode)
+    # # Plot the value function #####
+    # value_function = policy.value_function
+    # # Plot for states with a usable ace
+    # usable_ace_plot_path = os.path.join(log_dir, 'state_value_function_usable_ace.png')
+    # plot_value_function(value_function, usable_ace=1, title=f"State-Value Function (Usable Ace)\nEpisode:{num_episode}", save_path=usable_ace_plot_path)
+    # # Plot for states without a usable ace
+    # no_usable_ace_plot_path = os.path.join(log_dir, 'state_value_function_no_usable_ace.png')
+    # plot_value_function(value_function, usable_ace=0, title=f"State-Value Function (No Usable Ace)\nEpisode:{num_episode}", save_path=no_usable_ace_plot_path)
 
-    ##### Step 2: Plot the value function #####
-    value_function = policy.value_function
+    ##### Step 2: Try monte carlo estimation and control to estimate the q function and optimal policy pi #####
+    num_episode = 1_000_000
+    policy.reset()
+    policy.estimation_and_control(num_episode=num_episode)
+    policy_array = policy.policy
 
-    # Plot for states with a usable ace
-    plot_value_function(value_function, usable_ace=1, title="State-Value Function (Usable Ace)")
-
-    # Plot for states without a usable ace
-    plot_value_function(value_function, usable_ace=0, title="State-Value Function (No Usable Ace)")
+    # Plot and save the optimal policy for states with a usable ace
+    usable_ace_policy_path = os.path.join(log_dir, 'optimal_policy_usable_ace.png')
+    plot_policy(policy_array, usable_ace=1, title=f"Optimal Policy (Usable Ace)\nEpisode:{num_episode}", save_path=usable_ace_policy_path)
+    
+    # Plot and save the optimal policy for states without a usable ace
+    no_usable_ace_policy_path = os.path.join(log_dir, 'optimal_policy_no_usable_ace.png')
+    plot_policy(policy_array, usable_ace=0, title=f"Optimal Policy (No Usable Ace)\nEpisode:{num_episode}", save_path=no_usable_ace_policy_path)

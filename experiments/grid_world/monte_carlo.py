@@ -47,6 +47,3 @@ if __name__ == '__main__':
         agent.print_q_function()
         agent.print_policy()
         print("\n")
-    
-    ##### TODO: Step 4: Try off-policy monte carlo via importance sampling #####
-    
