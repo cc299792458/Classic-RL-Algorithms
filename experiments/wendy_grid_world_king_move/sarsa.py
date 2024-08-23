@@ -51,7 +51,7 @@ if __name__ == '__main__':
     env = WindyGridWorldKingsMoves(max_episode_length=False)
     agent = SarsaWithLogging(env=env)
 
-    ##### 1. Use td learning's estimation and control to solve wendy grid world
+    ##### 1. Use td learning's estimation and control to solve wendy grid world king move
     num_episode = 5_000
     agent.reset()
     episode_lengths = agent.estimation_and_control(num_episode=num_episode)
@@ -70,12 +70,12 @@ if __name__ == '__main__':
     plt.show()
 
     # Generate and plot the trajectory under the optimal policy
+    agent.set_epsilon(epsilon=0.0)
+    
     state, _ = env.reset()
     trajectory = []
     done = False
 
-    agent.set_epsilon(epsilon=0.0)
-    
     while not done:
         # Choose the best action according to the learned policy
         action = np.random.choice(np.arange(agent.num_action), p=agent.policy[state])

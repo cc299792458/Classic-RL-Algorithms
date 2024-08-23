@@ -70,6 +70,8 @@ if __name__ == '__main__':
     plt.show()
 
     # Generate and plot the trajectory under the optimal policy
+    agent.set_epsilon(epsilon=0.0)
+    
     state, _ = env.reset()
     trajectory = []
     done = False

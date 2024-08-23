@@ -132,9 +132,9 @@ class WindyGridWorldStochastic(WindyGridWorldKingsMoves):
         else:
             dx, dy = 0, 0
 
-        # Determine wind effect with stochastic variation
-        wind_adjustment = np.random.choice([-1, 0, 1], p=self.wind_probabilities)
-        dx -= (self.wind_strength[y] + wind_adjustment)
+        if self.wind_strength[y] > 0:
+            wind_adjustment = np.random.choice([-1, 0, 1], p=self.wind_probabilities)
+            dx -= (self.wind_strength[y] + wind_adjustment)
 
         new_x = max(min(x + dx, self.height - 1), 0)
         new_y = max(min(y + dy, self.width - 1), 0)
