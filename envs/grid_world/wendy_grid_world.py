@@ -15,29 +15,32 @@ class WindyGridWorld(GridWorld):
 
         self.goal_state = (3, 7)
 
-    def step(self, action):
-        self.current_step += 1
-
+    def _calculate_next_state(self, action):
         x, y = divmod(self.position, self.width)
 
-        if action == 0:
+        if action == 0:  # Up
             dx, dy = -1, 0
-        elif action == 1:
+        elif action == 1:  # Down
             dx, dy = 1, 0
-        elif action == 2:
-            dx, dy = 0, -1
-        elif action == 3:
+        elif action == 2:  # Right
             dx, dy = 0, 1
+        elif action == 3:  # Left
+            dx, dy = 0, -1
         else:
             dx, dy = 0, 0
 
+        # Apply wind effect
         dx -= self.wind_strength[y]
 
         new_x = max(min(x + dx, self.height - 1), 0)
         new_y = max(min(y + dy, self.width - 1), 0)
 
-        next_state = new_x * self.width + new_y
-        self.position = next_state
+        return new_x, new_y
+
+    def step(self, action):
+        self.current_step += 1
+        new_x, new_y = self._calculate_next_state(action)
+        self.position = new_x * self.width + new_y
 
         terminated = self.is_goal_state(new_x, new_y)
         reward = -1

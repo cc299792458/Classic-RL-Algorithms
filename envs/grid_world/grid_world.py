@@ -7,7 +7,7 @@ class GridWorld(gym.Env):
         self.width = width
         self.height = height
         
-        # Define action space: up, down, left, right
+        # Define action space: up, down, right, left
         self.action_space = spaces.Discrete(4)
         
         # Define observation space: a single integer representing the agent's position
@@ -40,10 +40,10 @@ class GridWorld(gym.Env):
                         new_x = max(x - 1, 0)
                     elif action == 1:  # down
                         new_x = min(x + 1, self.height - 1)
-                    elif action == 2:  # left
-                        new_y = max(y - 1, 0)
-                    elif action == 3:  # right
+                    elif action == 2:  # right
                         new_y = min(y + 1, self.width - 1)
+                    elif action == 3:  # left
+                        new_y = max(y - 1, 0)
                     
                     next_state = new_x * self.width + new_y
                     terminated = self.is_terminal_state(next_state)
@@ -103,7 +103,7 @@ class GridWorld(gym.Env):
                 print("-" * (max_width * self.width + (self.width - 1) * 3))  # Print separator line between rows
 
     def _print_q_function(self, q_function):
-        action_arrows = {0: '↑', 1: '↓', 2: '←', 3: '→'}  # Mapping of actions to arrows
+        action_arrows = {0: '↑', 1: '↓', 2: '→', 3: '←'}  # Mapping of actions to arrows
         cell_width = max(25, self.width * 5 + 5)  # Adjust the width based on grid size
 
         for i in range(self.height):
@@ -118,15 +118,15 @@ class GridWorld(gym.Env):
                     top_row.append(q_value.center(cell_width))
             print(" | ".join(top_row))
             
-            # Print the middle row with left and right Q-values (←, →)
+            # Print the middle row with right and left Q-values (→, ←)
             middle_row = []
             for j in range(self.width):
                 state = i * self.width + j
                 if self.is_terminal_state(state):
                     middle_row.append(" ".center(cell_width))
                 else:
-                    left_q_value = f"{action_arrows[2]} {q_function[state][2]:6.2f}"
-                    right_q_value = f"{q_function[state][3]:6.2f} {action_arrows[3]}"
+                    right_q_value = f"{action_arrows[2]} {q_function[state][2]:6.2f}"
+                    left_q_value = f"{q_function[state][3]:6.2f} {action_arrows[3]}"
                     middle_row.append(f"{left_q_value.ljust(cell_width//2)}{right_q_value.rjust(cell_width//2)}")
             print(" | ".join(middle_row))
             
@@ -145,7 +145,7 @@ class GridWorld(gym.Env):
                 print("-" * (cell_width * self.width + (self.width - 1) * 3))  # Separator line between rows
 
     def _print_policy(self, policy):
-        policy_arrows = {0: '↑', 1: '↓', 2: '←', 3: '→'}  # Corrected action to arrow mapping
+        policy_arrows = {0: '↑', 1: '↓', 2: '→', 3: '←'}  # Mapping of actions to arrows
         max_width = 4  # Define a fixed width for each cell to accommodate up to 4 arrows
         
         for i in range(self.height):
@@ -170,6 +170,6 @@ if __name__ == '__main__':
     env = GridWorld()
     env.reset()
     env.render()
-    state, reward, terminated, truncated, info = env.step(3)  # Example action: move right
+    state, reward, terminated, truncated, info = env.step(2)  # Example action: move right
     env.render()
     print(f"Terminated: {terminated}, Truncated: {truncated}, Info: {info}")

@@ -11,11 +11,11 @@ from traditional_algos.monte_carlo import MonteCarlo
 if __name__ == '__main__':
     set_seed()
     ##### Step 0: Build GridWorld environment and initiate policy #####
-    env = GridWorld(grid_size=4)
+    env = GridWorld()
     agent = MonteCarlo(env=env, epsilon=0.0)
-    num_episodes = [1, 10, 50, 100, 200, 500, 1000, 5000, 10000, 50_000, 500_000]
+    num_episodes = [1, 10, 50, 100, 200, 500, 1000, 5000, 10000, 50_000, 100_000]
 
-    # ##### Step 1: Try monte carlo prediction to estimate the value function #####
+    ##### Step 1: Try monte carlo prediction to estimate the value function #####
     for num_episode in num_episodes:
         start_time = time.time()
         agent.prediction(num_episode)
