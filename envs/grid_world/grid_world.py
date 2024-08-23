@@ -3,20 +3,21 @@ import gymnasium as gym
 from gymnasium import spaces
 
 class GridWorld(gym.Env):
-    def __init__(self, grid_size=4):
-        self.grid_size = grid_size
+    def __init__(self, width=4, height=4):
+        self.width = width
+        self.height = height
         
         # Define action space: up, down, left, right
         self.action_space = spaces.Discrete(4)
         
         # Define observation space: a single integer representing the agent's position
-        self.observation_space = spaces.Discrete(self.grid_size * self.grid_size)
+        self.observation_space = spaces.Discrete(self.width * self.height)
         
         # Initialize the transition dynamics
         self.P = self._create_transition_matrix()
 
         # Set maximum episode length as a quadratic function of grid size
-        self.max_episode_length = 10 * self.grid_size * self.grid_size
+        self.max_episode_length = 10 * self.width * self.height
         self.current_step = 0
 
         # Initial state
@@ -27,9 +28,9 @@ class GridWorld(gym.Env):
         Create the transition matrix P[state][action] -> [(probability, next_state, reward, terminated)]
         """
         P = {}
-        for x in range(self.grid_size):
-            for y in range(self.grid_size):
-                state = x * self.grid_size + y
+        for x in range(self.height):
+            for y in range(self.width):
+                state = x * self.width + y
                 P[state] = {a: [] for a in range(self.action_space.n)}
                 
                 # Define possible transitions for each action
@@ -38,13 +39,13 @@ class GridWorld(gym.Env):
                     if action == 0:  # up
                         new_x = max(x - 1, 0)
                     elif action == 1:  # down
-                        new_x = min(x + 1, self.grid_size - 1)
+                        new_x = min(x + 1, self.height - 1)
                     elif action == 2:  # left
                         new_y = max(y - 1, 0)
                     elif action == 3:  # right
-                        new_y = min(y + 1, self.grid_size - 1)
+                        new_y = min(y + 1, self.width - 1)
                     
-                    next_state = new_x * self.grid_size + new_y
+                    next_state = new_x * self.width + new_y
                     terminated = self.is_terminal_state(next_state)
                     reward = -1  # Constant reward for each step
                     
@@ -54,7 +55,7 @@ class GridWorld(gym.Env):
         return P
     
     def is_terminal_state(self, state):
-        return (state == 0) or (state == self.grid_size * self.grid_size - 1)
+        return (state == 0) or (state == self.width * self.height - 1)
 
     def reset(self):
         """
@@ -78,40 +79,38 @@ class GridWorld(gym.Env):
 
     def render(self):
         # Create an empty grid
-        grid = np.zeros((self.grid_size, self.grid_size), dtype=int)
+        grid = np.zeros((self.height, self.width), dtype=int)
         
         # Convert position index to 2D grid coordinates and set it to 1
-        x, y = divmod(self.position, self.grid_size)
+        x, y = divmod(self.position, self.width)
         grid[x, y] = 1
         
         # Simple print render
         print(grid)
 
     def _print_value_function(self, value_function):
-        grid_size = self.grid_size
         max_value = max(value_function)
         min_value = min(value_function)
         max_width = max(len(f"{max_value:.2f}"), len(f"{min_value:.2f}"))  # Ensure consistent width for alignment
 
-        for i in range(grid_size):
+        for i in range(self.height):
             row_values = []
-            for j in range(grid_size):
-                value = value_function[i * grid_size + j]
+            for j in range(self.width):
+                value = value_function[i * self.width + j]
                 row_values.append(f"{value:>{max_width}.2f}")  # Align values by setting a consistent column width
             print(" | ".join(row_values))  # Use " | " as a separator between columns
-            if i < grid_size - 1:
-                print("-" * (max_width * grid_size + (grid_size - 1) * 3))  # Print separator line between rows
+            if i < self.height - 1:
+                print("-" * (max_width * self.width + (self.width - 1) * 3))  # Print separator line between rows
 
     def _print_q_function(self, q_function):
-        grid_size = self.grid_size
         action_arrows = {0: '↑', 1: '↓', 2: '←', 3: '→'}  # Mapping of actions to arrows
-        cell_width = max(25, grid_size * 5 + 5)  # Adjust the width based on grid size
+        cell_width = max(25, self.width * 5 + 5)  # Adjust the width based on grid size
 
-        for i in range(grid_size):
+        for i in range(self.height):
             # Print the top row of Q-values (↑)
             top_row = []
-            for j in range(grid_size):
-                state = i * grid_size + j
+            for j in range(self.width):
+                state = i * self.width + j
                 if self.is_terminal_state(state):
                     top_row.append("T".center(cell_width))
                 else:
@@ -121,8 +120,8 @@ class GridWorld(gym.Env):
             
             # Print the middle row with left and right Q-values (←, →)
             middle_row = []
-            for j in range(grid_size):
-                state = i * grid_size + j
+            for j in range(self.width):
+                state = i * self.width + j
                 if self.is_terminal_state(state):
                     middle_row.append(" ".center(cell_width))
                 else:
@@ -133,8 +132,8 @@ class GridWorld(gym.Env):
             
             # Print the bottom row of Q-values (↓)
             bottom_row = []
-            for j in range(grid_size):
-                state = i * grid_size + j
+            for j in range(self.width):
+                state = i * self.width + j
                 if self.is_terminal_state(state):
                     bottom_row.append(" ".center(cell_width))
                 else:
@@ -142,18 +141,17 @@ class GridWorld(gym.Env):
                     bottom_row.append(q_value.center(cell_width))
             print(" | ".join(bottom_row))
             
-            if i < grid_size - 1:
-                print("-" * (cell_width * grid_size + (grid_size - 1) * 3))  # Separator line between rows
+            if i < self.height - 1:
+                print("-" * (cell_width * self.width + (self.width - 1) * 3))  # Separator line between rows
 
     def _print_policy(self, policy):
-        grid_size = self.grid_size
         policy_arrows = {0: '↑', 1: '↓', 2: '←', 3: '→'}  # Corrected action to arrow mapping
         max_width = 4  # Define a fixed width for each cell to accommodate up to 4 arrows
         
-        for i in range(grid_size):
+        for i in range(self.height):
             row_policy = []
-            for j in range(grid_size):
-                state = i * grid_size + j
+            for j in range(self.width):
+                state = i * self.width + j
                 if self.is_terminal_state(state):
                     cell_content = 'T'.center(max_width)  # Center 'T' within the fixed width
                 else:
@@ -165,8 +163,8 @@ class GridWorld(gym.Env):
             # Join the row content with ' | ' separator
             print(" | ".join(row_policy))
             
-            if i < grid_size - 1:
-                print("-" * (max_width * grid_size + (grid_size - 1) * 3))  # Print separator line between rows
+            if i < self.height - 1:
+                print("-" * (max_width * self.width + (self.width - 1) * 3))  # Print separator line between rows
 
 if __name__ == '__main__':
     env = GridWorld()

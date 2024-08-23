@@ -8,7 +8,7 @@ import gymnasium as gym
 from tqdm import tqdm
 from utils.gym_utils import get_observation_shape
 
-class Sarsa:
+class QLearning:
     def __init__(self, env: gym.Env, gamma=1.0, epsilon=0.1, alpha=0.1, initial_policy=None) -> None:
         self.env = env
         self.gamma = gamma  # Discounting rate
@@ -40,10 +40,10 @@ class Sarsa:
                     action = np.random.choice(np.arange(self.num_action), p=self.policy[state])
                     next_state, reward, terminated, truncated, info = self.env.step(action=action)
                     done = terminated or truncated
-
+                    
                     # Update Q function
                     self.update_q_function(state, action, reward, next_state)
-
+                    
                     # Update policy based on new Q values
                     self.improve_policy(state) 
 
@@ -51,14 +51,11 @@ class Sarsa:
                     state = next_state
 
                 pbar.update(1)
-        
+    
     def update_q_function(self, state, action, reward, next_state):
-        # Choose next action from next state using updated policy
-        next_action = np.random.choice(np.arange(self.num_action), p=self.policy[next_state])
-
-        td_error = reward + self.gamma * self.Q[next_state][next_action] - self.Q[state][action]
+        td_error = reward + self.gamma * np.max(self.Q[next_state]) - self.Q[state][action]
         self.Q[state][action] += self.alpha * td_error
-        
+
     def improve_policy(self, state):
         tolerance = 1e-8
         max_q_value = np.max(self.Q[state])
@@ -71,7 +68,3 @@ class Sarsa:
         # Implement ε-greedy exploration
         if self.epsilon > 0:
             self.policy[state] = (1 - self.epsilon) * self.policy[state] + (self.epsilon / self.num_action)
-
-class ExpectedSarsa(Sarsa):
-    def update_q_function(self, state, action, reward, next_state):
-        pass

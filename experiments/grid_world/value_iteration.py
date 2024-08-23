@@ -5,7 +5,7 @@
 import time
 
 from utils.misc_utils import set_seed
-from envs.grid_world import GridWorld
+from envs.grid_world.grid_world import GridWorld
 from traditional_algos.dynamic_programming.value_iteration.value_iteration import ValueIteration
 
 if __name__ == '__main__':
