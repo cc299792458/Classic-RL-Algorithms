@@ -29,9 +29,12 @@ class MonteCarlo:
             self.policy = self.initial_policy
         self.value_function = np.zeros(self.observation_shape)
         self.Q = np.zeros((*self.observation_shape, self.num_action))  # Action-value function
+        # For incremental update
+        self.state_counts = np.zeros(self.observation_shape)
+        self.action_counts = np.zeros((*self.observation_shape, self.num_action))
         # For Monte Carlo, we need to track returns
-        self.returns = {state: [] for state in np.ndindex(self.observation_shape)}
-        self.returns_q = {state: {action: [] for action in range(self.num_action)} for state in np.ndindex(self.observation_shape)}
+        # self.returns = {state: [] for state in np.ndindex(self.observation_shape)}
+        # self.returns_q = {state: {action: [] for action in range(self.num_action)} for state in np.ndindex(self.observation_shape)}
 
     def prediction(self, num_episode):
         """
@@ -73,33 +76,70 @@ class MonteCarlo:
             episode.append((state, action, reward))
             state = next_state
         return episode
-
+    
     def update_value_function(self, episode):
         """
-            Update the value function based on the generated episode.
+        Incrementally update the value function based on the generated episode.
         """
         G = 0
         for state, action, reward in reversed(episode):
             G = self.gamma * G + reward
-            # if hasattr(self.env, 'is_terminal_state') and self.env.is_terminal_state(state):
-            #     continue
-            # Only episodes with first-visited states are used for updating value function
-            if not any(state==x[0] for x in episode[:episode.index((state, action, reward))]):
-                self.returns[state].append(G)
-                self.value_function[state] = np.mean(self.returns[state])
-    
+            
+            if not any(state == x[0] for x in episode[:episode.index((state, action, reward))]):
+                # Increment the visit count
+                self.state_counts[state] += 1
+                
+                # Calculate the step size (learning rate)
+                alpha = 1.0 / self.state_counts[state]
+                
+                # Incremental update of V(s)
+                self.value_function[state] += alpha * (G - self.value_function[state])
+
     def update_q_function(self, episode):
         """
-            Update the Q function based on the generated episode.
+        Incrementally update the Q function based on the generated episode.
         """
         G = 0
         for state, action, reward in reversed(episode):
             G = self.gamma * G + reward
-            # if hasattr(self.env, 'is_terminal_state') and self.env.is_terminal_state(state):
-            #     continue
+            
             if not any(state==x[0] and action==x[1] for x in episode[:episode.index((state, action, reward))]):
-                self.returns_q[state][action].append(G)
-                self.Q[state][action] = np.mean(self.returns_q[state][action])
+                # Increment the visit count
+                self.action_counts[state][action] += 1
+                
+                # Calculate the step size (learning rate)
+                alpha = 1.0 / self.action_counts[state][action]
+                
+                # Incremental update of Q(s, a)
+                self.Q[state][action] += alpha * (G - self.Q[state][action])
+    
+    # def update_value_function(self, episode):
+    #     """
+    #         Update the value function based on the generated episode.
+    #     """
+    #     G = 0
+    #     for state, action, reward in reversed(episode):
+    #         G = self.gamma * G + reward
+    #         # if hasattr(self.env, 'is_terminal_state') and self.env.is_terminal_state(state):
+    #         #     continue
+    #         # Only episodes with first-visited states are used for updating value function
+    #         if not any(state==x[0] for x in episode[:episode.index((state, action, reward))]):
+    #             self.returns[state].append(G)
+    #             self.value_function[state] = np.mean(self.returns[state])
+    
+
+    # def update_q_function(self, episode):
+    #     """
+    #         Update the Q function based on the generated episode.
+    #     """
+    #     G = 0
+    #     for state, action, reward in reversed(episode):
+    #         G = self.gamma * G + reward
+    #         # if hasattr(self.env, 'is_terminal_state') and self.env.is_terminal_state(state):
+    #         #     continue
+    #         if not any(state==x[0] and action==x[1] for x in episode[:episode.index((state, action, reward))]):
+    #             self.returns_q[state][action].append(G)
+    #             self.Q[state][action] = np.mean(self.returns_q[state][action])
 
     def improve_policy(self):
         tolerance = 1e-8    # This is a too small tolerance

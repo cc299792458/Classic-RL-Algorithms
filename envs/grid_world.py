@@ -60,7 +60,9 @@ class GridWorld(gym.Env):
         """
         Reset the grid to the initial state
         """
-        self.position = np.random.randint(self.observation_space.n)
+        self.position = None
+        while self.position is None or self.is_terminal_state(self.position):
+            self.position = np.random.randint(self.observation_space.n)
         self.current_step = 0
         return self.position, {}
 
