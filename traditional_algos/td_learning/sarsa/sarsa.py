@@ -77,4 +77,8 @@ class Sarsa:
 
 class ExpectedSarsa(Sarsa):
     def update_q_function(self, state, action, reward, next_state):
-        pass
+        # Calculate the expected Q value
+        expected_q = np.sum(self.policy[next_state] * self.Q[next_state])
+        
+        td_error = reward + self.gamma * expected_q - self.Q[state][action]
+        self.Q[state][action] += self.alpha * td_error
