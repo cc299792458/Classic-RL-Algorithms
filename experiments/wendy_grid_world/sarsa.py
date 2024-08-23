@@ -46,12 +46,11 @@ class SarsaWithLogging(Sarsa):
 if __name__ == '__main__':
     set_seed()
     log_dir = os.path.dirname(os.path.abspath(__file__))
-    log_dir = os.path.dirname(os.path.abspath(__file__))
     ##### 0. Load environment and initiate policy #####
     env = WindyGridWorld(max_episode_length=False)
     agent = SarsaWithLogging(env=env)
 
-    ##### 1. Use td learning's estimation and control to solve wendy grid world
+    ##### 1. Use sarsa to solve wendy grid world #####
     num_episode = 2000
     agent.reset()
     episode_lengths = agent.estimation_and_control(num_episode=num_episode)
