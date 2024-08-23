@@ -1,4 +1,5 @@
 import numpy as np
+import gymnasium as gym
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
@@ -57,6 +58,81 @@ class WindyGridWorld(GridWorld):
         self.position = 3 * self.width
         self.current_step = 0
         return self.position, {}
+
+class WindyGridWorldKingsMoves(WindyGridWorld):
+    def __init__(self, width=10, height=7, wind_strength=None):
+        super().__init__(width=width, height=height, wind_strength=wind_strength)
+        self.action_space = gym.spaces.Discrete(8)  # Allow for diagonal moves
+
+    def _calculate_next_state(self, action):
+        x, y = divmod(self.position, self.width)
+
+        if action == 0:  # Up
+            dx, dy = -1, 0
+        elif action == 1:  # Down
+            dx, dy = 1, 0
+        elif action == 2:  # Right
+            dx, dy = 0, 1
+        elif action == 3:  # Left
+            dx, dy = 0, -1
+        elif action == 4:  # Up-right
+            dx, dy = -1, 1
+        elif action == 5:  # Down-right
+            dx, dy = 1, 1
+        elif action == 6:  # Up-left
+            dx, dy = -1, -1
+        elif action == 7:  # Down-left
+            dx, dy = 1, -1
+        else:
+            dx, dy = 0, 0
+
+        # Apply wind effect
+        dx -= self.wind_strength[y]
+
+        new_x = max(min(x + dx, self.height - 1), 0)
+        new_y = max(min(y + dy, self.width - 1), 0)
+
+        return new_x, new_y
+
+class WindyGridWorldStochastic(WindyGridWorldKingsMoves):
+    def __init__(self, width=10, height=7, wind_strength=None, wind_probabilities=None):
+        super().__init__(width=width, height=height, wind_strength=wind_strength)
+        # Define the probabilities for wind change: [probability of decrease, no change, increase]
+        if wind_probabilities is None:
+            self.wind_probabilities = [1/3, 1/3, 1/3]
+        else:
+            self.wind_probabilities = wind_probabilities
+
+    def _calculate_next_state(self, action):
+        x, y = divmod(self.position, self.width)
+
+        if action == 0:  # Up
+            dx, dy = -1, 0
+        elif action == 1:  # Down
+            dx, dy = 1, 0
+        elif action == 2:  # Right
+            dx, dy = 0, 1
+        elif action == 3:  # Left
+            dx, dy = 0, -1
+        elif action == 4:  # Up-right
+            dx, dy = -1, 1
+        elif action == 5:  # Down-right
+            dx, dy = 1, 1
+        elif action == 6:  # Up-left
+            dx, dy = -1, -1
+        elif action == 7:  # Down-left
+            dx, dy = 1, -1
+        else:
+            dx, dy = 0, 0
+
+        # Determine wind effect with stochastic variation
+        wind_adjustment = np.random.choice([-1, 0, 1], p=self.wind_probabilities)
+        dx -= (self.wind_strength[y] + wind_adjustment)
+
+        new_x = max(min(x + dx, self.height - 1), 0)
+        new_y = max(min(y + dy, self.width - 1), 0)
+
+        return new_x, new_y
 
 def animate_trajectory(env, trajectory, grid_size, goal_state):
     fig, ax = plt.subplots(figsize=(8, 6))
