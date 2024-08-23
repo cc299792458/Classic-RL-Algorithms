@@ -1,5 +1,5 @@
 """
-    Use Q Learning to solve Cliff Walking
+    Use Sarsa to solve Cliff Walking
 """
 
 import os
@@ -9,9 +9,9 @@ import matplotlib.pyplot as plt
 
 from tqdm import tqdm
 from utils.misc_utils import set_seed, moving_average_with_padding
-from traditional_algos.td_learning.q_learning import QLearning
+from traditional_algos.td_learning.sarsa import Sarsa
 
-class QLearningWithLogging(QLearning):
+class SarsaWithLogging(Sarsa):
     def estimation_and_control(self, num_episode):
         self.reset()
         rewards_per_episode = []  # Initialize the list to store total rewards per episode
@@ -50,9 +50,9 @@ if __name__ == '__main__':
     log_dir = os.path.dirname(os.path.abspath(__file__))
     ##### 0. Load environment and initiate policy #####
     env = gym.make('CliffWalking-v0')
-    agent = QLearningWithLogging(env=env)
+    agent = SarsaWithLogging(env=env)
 
-    ##### 1. Use q learning to solve cliff walking #####
+    ##### 1. Use sarsa to solve cliff walking #####
     num_episode = 1000
     window_size = 50  # Define a window size for the moving average
 
@@ -67,10 +67,10 @@ if __name__ == '__main__':
     plt.plot(range(num_episode), smoothed_rewards)
     plt.xlabel('Episode')
     plt.ylabel('Sum of Rewards during Episode')
-    plt.title('Sum of Rewards vs. Episode for Cliff Walking - Q Learning')
+    plt.title('Sum of Rewards vs. Episode for Cliff Walking - Sarsa')
     plt.grid(True)
 
-    rewards_vs_episode_plot_path = os.path.join(log_dir, 'q_learning_rewards_vs_episode.png')
+    rewards_vs_episode_plot_path = os.path.join(log_dir, 'sarsa_rewards_vs_episode.png')
     plt.savefig(rewards_vs_episode_plot_path)
 
     plt.show()
