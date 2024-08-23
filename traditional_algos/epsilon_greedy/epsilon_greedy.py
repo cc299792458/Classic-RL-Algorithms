@@ -14,7 +14,6 @@ class EpsilonGreedy:
         self.q_values = np.zeros(self.n_actions)
         self.action_counts = np.zeros(self.n_actions)
 
-
     def select_action(self):
         if np.random.rand() < self.epsilon:
             return self.env.action_space.sample()

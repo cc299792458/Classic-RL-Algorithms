@@ -71,6 +71,9 @@ class Sarsa:
         # Implement ε-greedy exploration
         if self.epsilon > 0:
             self.policy[state] = (1 - self.epsilon) * self.policy[state] + (self.epsilon / self.num_action)
+    
+    def set_epsilon(self, epsilon):
+        self.epsilon = epsilon
 
 class ExpectedSarsa(Sarsa):
     def update_q_function(self, state, action, reward, next_state):
