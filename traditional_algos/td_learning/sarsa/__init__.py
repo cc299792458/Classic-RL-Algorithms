@@ -1,1 +1,1 @@
-from .sarsa import Sarsa
+from .sarsa import Sarsa, ExpectedSarsa
