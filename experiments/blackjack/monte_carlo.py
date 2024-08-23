@@ -7,8 +7,8 @@ import numpy as np
 import gymnasium as gym
 import matplotlib.pylab as plt
 
-from mpl_toolkits.mplot3d import Axes3D
 from utils.misc_utils import set_seed
+from mpl_toolkits.mplot3d import Axes3D
 from utils.gym_utils import get_observation_shape
 from traditional_algos.monte_carlo import MonteCarlo
 
@@ -123,25 +123,25 @@ if __name__ == '__main__':
     env = gym.make('Blackjack-v1', natural=False, sab=True)
 
     initial_policy = create_initial_policy(env)
-    policy = MonteCarlo(env=env, initial_policy=initial_policy)
+    agent = MonteCarlo(env=env, initial_policy=initial_policy)
 
-    # ##### Step 1: Try monte carlo prediction to estimate the value function #####
-    # num_episode = 500_000
-    # policy.prediction(num_episode=num_episode)
-    # # Plot the value function #####
-    # value_function = policy.value_function
-    # # Plot for states with a usable ace
-    # usable_ace_plot_path = os.path.join(log_dir, 'state_value_function_usable_ace.png')
-    # plot_value_function(value_function, usable_ace=1, title=f"State-Value Function (Usable Ace)\nEpisode:{num_episode}", save_path=usable_ace_plot_path)
-    # # Plot for states without a usable ace
-    # no_usable_ace_plot_path = os.path.join(log_dir, 'state_value_function_no_usable_ace.png')
-    # plot_value_function(value_function, usable_ace=0, title=f"State-Value Function (No Usable Ace)\nEpisode:{num_episode}", save_path=no_usable_ace_plot_path)
+    ##### Step 1: Try monte carlo prediction to estimate the value function #####
+    num_episode = 500_000
+    agent.prediction(num_episode=num_episode)
+    # Plot the value function #####
+    value_function = agent.value_function
+    # Plot for states with a usable ace
+    usable_ace_plot_path = os.path.join(log_dir, 'state_value_function_usable_ace.png')
+    plot_value_function(value_function, usable_ace=1, title=f"State-Value Function (Usable Ace)\nEpisode:{num_episode}", save_path=usable_ace_plot_path)
+    # Plot for states without a usable ace
+    no_usable_ace_plot_path = os.path.join(log_dir, 'state_value_function_no_usable_ace.png')
+    plot_value_function(value_function, usable_ace=0, title=f"State-Value Function (No Usable Ace)\nEpisode:{num_episode}", save_path=no_usable_ace_plot_path)
 
     ##### Step 2: Try monte carlo estimation and control to estimate the q function and optimal policy pi #####
     num_episode = 1_000_000
-    policy.reset()
-    policy.estimation_and_control(num_episode=num_episode)
-    policy_array = policy.policy
+    agent.reset()
+    agent.estimation_and_control(num_episode=num_episode)
+    policy_array = agent.policy
 
     # Plot and save the optimal policy for states with a usable ace
     usable_ace_policy_path = os.path.join(log_dir, 'optimal_policy_usable_ace.png')

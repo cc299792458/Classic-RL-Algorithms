@@ -3,7 +3,7 @@ import gymnasium as gym
 from gymnasium import spaces
 
 class GridWorld(gym.Env):
-    def __init__(self, width=4, height=4):
+    def __init__(self, width=4, height=4, max_episode_length=True):
         self.width = width
         self.height = height
         
@@ -16,8 +16,14 @@ class GridWorld(gym.Env):
         # Initialize the transition dynamics
         self.P = self._create_transition_matrix()
 
-        # Set maximum episode length as a quadratic function of grid size
-        self.max_episode_length = 10 * self.width * self.height
+        # Set maximum episode length; if max_episode_length is True, use the default limit
+        if max_episode_length is True:
+            self.max_episode_length = 10 * self.width * self.height
+        elif max_episode_length is False:
+            self.max_episode_length = None
+        else:
+            self.max_episode_length = max_episode_length
+
         self.current_step = 0
 
         # Initial state
@@ -72,7 +78,10 @@ class GridWorld(gym.Env):
         transitions = self.P[self.position][action]
         prob, next_state, reward, terminated = transitions[0]  # Since deterministic, only one transition
         self.position = next_state
-        truncated = self.current_step >= self.max_episode_length
+        if self.max_episode_length is not None:
+            truncated = self.current_step >= self.max_episode_length
+        else:
+            truncated = False
         info = {'terminal': self.is_terminal_state(next_state)}
 
         return self.position, reward, terminated, truncated, info

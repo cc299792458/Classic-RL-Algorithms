@@ -13,7 +13,7 @@ if __name__ == '__main__':
     log_dir = os.path.dirname(os.path.abspath(__file__))
     ##### 0. Load environment, policy and initialize parameters #####
     env = KArmedBandit()
-    policy = EpsilonGreedy(env=env)
+    agent = EpsilonGreedy(env=env)
 
     n_runs = 2000
     epsilons = [0.0, 0.001, 0.01, 0.1, 0.2, 0.5]
@@ -26,7 +26,7 @@ if __name__ == '__main__':
         avg_rewards_per_run = np.zeros(env.max_time_steps)  # To accumulate rewards for averaging
         avg_optimal_action_selection = np.zeros(env.max_time_steps)
 
-        policy.set_epsilon(epsilon=epsilon)
+        agent.set_epsilon(epsilon=epsilon)
         # Add a tqdm progress bar for the 2000 runs
         for _ in tqdm(range(n_runs), desc=f'Epsilon {epsilon}'):
             rewards = []
@@ -34,22 +34,22 @@ if __name__ == '__main__':
 
             done = False
             while not done:
-                action = policy.select_action()
+                action = agent.select_action()
                 _, reward, terminated, truncated, _ = env.step(action)
                 done = terminated or truncated
 
                 rewards.append(reward)
                 optimal_action_selections.append(1 if action in env.optimal_actions else 0)  # Check if action is one of the optimal actions
 
-                policy.update_q_values(action, reward)
+                agent.update_q_values(action, reward)
 
             # Accumulate rewards and optimal action selection for this run
             avg_rewards_per_run += np.array(rewards)
             avg_optimal_action_selection += np.array(optimal_action_selections)
 
-            # Reset the environment and policy after each run
+            # Reset the environment and agent after each run
             env.reset()
-            policy.reset()
+            agent.reset()
 
         # Compute the average reward and optimal action selection across all runs
         avg_rewards_per_run /= n_runs

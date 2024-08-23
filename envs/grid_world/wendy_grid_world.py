@@ -1,3 +1,7 @@
+"""
+    Wendy GridWorld, Windy GridWorld Kings Moves, and Wendy GridWorld Stochastic
+"""
+
 import numpy as np
 import gymnasium as gym
 import matplotlib.pyplot as plt
@@ -6,8 +10,8 @@ from matplotlib.animation import FuncAnimation
 from envs.grid_world import GridWorld
 
 class WindyGridWorld(GridWorld):
-    def __init__(self, width=10, height=7, wind_strength=None):
-        super().__init__(width=width, height=height)
+    def __init__(self, width=10, height=7, max_episode_length=True, wind_strength=None):
+        super().__init__(width=width, height=height, max_episode_length=max_episode_length)
 
         if wind_strength is None:
             self.wind_strength = [0, 0, 0, 1, 1, 1, 2, 2, 1, 0]
@@ -46,7 +50,10 @@ class WindyGridWorld(GridWorld):
         terminated = self.is_goal_state(new_x, new_y)
         reward = -1
 
-        truncated = self.current_step >= self.max_episode_length
+        if self.max_episode_length is not None:
+            truncated = self.current_step >= self.max_episode_length
+        else:
+            truncated = False
         info = {'terminal': terminated}
 
         return self.position, reward, terminated, truncated, info
@@ -60,8 +67,8 @@ class WindyGridWorld(GridWorld):
         return self.position, {}
 
 class WindyGridWorldKingsMoves(WindyGridWorld):
-    def __init__(self, width=10, height=7, wind_strength=None):
-        super().__init__(width=width, height=height, wind_strength=wind_strength)
+    def __init__(self, width=10, height=7, max_episode_length=True, wind_strength=None):
+        super().__init__(width=width, height=height, max_episode_length=max_episode_length, wind_strength=wind_strength)
         self.action_space = gym.spaces.Discrete(8)  # Allow for diagonal moves
 
     def _calculate_next_state(self, action):
@@ -95,8 +102,8 @@ class WindyGridWorldKingsMoves(WindyGridWorld):
         return new_x, new_y
 
 class WindyGridWorldStochastic(WindyGridWorldKingsMoves):
-    def __init__(self, width=10, height=7, wind_strength=None, wind_probabilities=None):
-        super().__init__(width=width, height=height, wind_strength=wind_strength)
+    def __init__(self, width=10, height=7, max_episode_length=True, wind_strength=None, wind_probabilities=None):
+        super().__init__(width=width, height=height, max_episode_length=max_episode_length, wind_strength=wind_strength)
         # Define the probabilities for wind change: [probability of decrease, no change, increase]
         if wind_probabilities is None:
             self.wind_probabilities = [1/3, 1/3, 1/3]
