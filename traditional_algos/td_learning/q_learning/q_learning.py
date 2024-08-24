@@ -68,3 +68,6 @@ class QLearning:
         # Implement ε-greedy exploration
         if self.epsilon > 0:
             self.policy[state] = (1 - self.epsilon) * self.policy[state] + (self.epsilon / self.num_action)
+
+    def set_alpha(self, alpha):
+        self.alpha = alpha

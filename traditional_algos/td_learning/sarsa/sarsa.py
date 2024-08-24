@@ -79,6 +79,9 @@ class Sarsa:
     def set_epsilon(self, epsilon):
         self.epsilon = epsilon
 
+    def set_alpha(self, alpha):
+        self.alpha = alpha
+
 class ExpectedSarsa(Sarsa):
     def estimation_and_control(self, num_episode):
         self.reset()

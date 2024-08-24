@@ -53,22 +53,28 @@ if __name__ == '__main__':
     agent = QLearningWithLogging(env=env)
 
     ##### 1. Use q learning to solve cliff walking #####
+    alphas = [(i+1)/10 for i in range(10)]
     num_episode = 1000
     window_size = 50  # Define a window size for the moving average
 
-    agent.reset()
-    rewards_per_episode = agent.estimation_and_control(num_episode=num_episode)
-
-    # Compute the moving average of the rewards
-    smoothed_rewards = moving_average_with_padding(rewards_per_episode, window_size=window_size)
-
-    # Plot the sum of rewards per episode
     plt.figure(figsize=(10, 6))
-    plt.plot(range(num_episode), smoothed_rewards)
+
+    for alpha in alphas:
+        agent.reset()
+        agent.set_alpha(alpha=alpha)
+        rewards_per_episode = agent.estimation_and_control(num_episode=num_episode)
+
+        # Compute the moving average of the rewards
+        smoothed_rewards = moving_average_with_padding(rewards_per_episode, window_size=window_size)
+
+        # Plot the smoothed rewards with a label indicating the alpha value
+        plt.plot(range(num_episode), smoothed_rewards, label=f'Alpha = {alpha:.1f}')
+
     plt.xlabel('Episode')
     plt.ylabel('Sum of Rewards during Episode')
     plt.title('Sum of Rewards vs. Episode for Cliff Walking - Q Learning')
     plt.grid(True)
+    plt.legend()  # Add a legend to indicate alpha values
 
     rewards_vs_episode_plot_path = os.path.join(log_dir, 'q_learning_rewards_vs_episode.png')
     plt.savefig(rewards_vs_episode_plot_path)
