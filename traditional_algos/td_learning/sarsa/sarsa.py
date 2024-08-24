@@ -36,19 +36,21 @@ class Sarsa:
             for _ in range(num_episode):
                 state, info = self.env.reset()
                 done = False
+                action = np.random.choice(np.arange(self.num_action), p=self.policy[state])
                 while not done:
-                    action = np.random.choice(np.arange(self.num_action), p=self.policy[state])
                     next_state, reward, terminated, truncated, info = self.env.step(action=action)
                     done = terminated or truncated
 
                     # Update Q function
-                    self.update_q_function(state, action, reward, next_state)
+                    next_action = self.update_q_function(state, action, reward, next_state)
 
                     # Update policy based on new Q values
                     self.improve_policy(state) 
 
                     # Move to the next state
                     state = next_state
+                    # Next action is selected before updating the q function
+                    action = next_action
 
                 pbar.update(1)
         
@@ -58,6 +60,8 @@ class Sarsa:
 
         td_error = reward + self.gamma * self.Q[next_state][next_action] - self.Q[state][action]
         self.Q[state][action] += self.alpha * td_error
+
+        return next_action
         
     def improve_policy(self, state):
         tolerance = 1e-8
@@ -76,9 +80,43 @@ class Sarsa:
         self.epsilon = epsilon
 
 class ExpectedSarsa(Sarsa):
+    def estimation_and_control(self, num_episode):
+        self.reset()
+        with tqdm(total=num_episode) as pbar:
+            for _ in range(num_episode):
+                state, info = self.env.reset()
+                done = False
+                while not done:
+                    action = np.random.choice(np.arange(self.num_action), p=self.policy[state])
+                    next_state, reward, terminated, truncated, info = self.env.step(action=action)
+                    done = terminated or truncated
+
+                    # Update Q function
+                    next_action = self.update_q_function(state, action, reward, next_state)
+
+                    # Update policy based on new Q values
+                    self.improve_policy(state) 
+
+                    # Move to the next state
+                    state = next_state
+                    
+                pbar.update(1)
+
     def update_q_function(self, state, action, reward, next_state):
         # Calculate the expected Q value
         expected_q = np.sum(self.policy[next_state] * self.Q[next_state])
         
         td_error = reward + self.gamma * expected_q - self.Q[state][action]
         self.Q[state][action] += self.alpha * td_error
+
+class NStepSarsa(Sarsa):
+    def __init__(self, env: gym.Env, gamma=1, epsilon=0.1, alpha=0.1, initial_policy=None, n=1) -> None:
+        super().__init__(env, gamma, epsilon, alpha, initial_policy)
+
+        self.n = n  # Back up steps
+
+    def estimation_and_control(self, num_episode):
+        assert NotImplementedError
+
+    def update_q_function(self, state, action, reward, next_state):
+        assert NotImplementedError

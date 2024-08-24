@@ -20,21 +20,19 @@ class SarsaWithLogging(Sarsa):
             for _ in range(num_episode):
                 state, _ = self.env.reset()
                 done = False
-                # timesteps = 0
+                action = np.random.choice(np.arange(self.num_action), p=self.policy[state])
                 while not done:
-                    action = np.random.choice(np.arange(self.num_action), p=self.policy[state])
                     next_state, reward, terminated, truncated, info = self.env.step(action=action)
                     done = terminated or truncated
                     
                     # Update Q function
-                    next_action = np.random.choice(np.arange(self.num_action), p=self.policy[next_state])
-                    td_error = (reward + self.gamma * self.Q[next_state][next_action] - self.Q[state][action])
-                    self.Q[state][action] += self.alpha * td_error
-                    
+                    next_action = self.update_q_function(state, action, reward, next_state)
+
                     # Update policy
                     self.improve_policy(state=state)
                     
                     state = next_state
+                    action = next_action
                     timesteps += 1
 
                 episode_lengths.append(timesteps)
@@ -42,6 +40,7 @@ class SarsaWithLogging(Sarsa):
                 pbar.update(1)
 
         return episode_lengths
+
 
 if __name__ == '__main__':
     set_seed()
@@ -52,7 +51,7 @@ if __name__ == '__main__':
     agent = SarsaWithLogging(env=env)
 
     ##### 1. Use td learning's estimation and control to solve wendy grid world with stochastic wind
-    num_episode = 5_000
+    num_episode = 8_000
     agent.reset()
     episode_lengths = agent.estimation_and_control(num_episode=num_episode)
 

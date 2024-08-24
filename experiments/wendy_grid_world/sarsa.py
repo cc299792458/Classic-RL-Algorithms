@@ -20,21 +20,19 @@ class SarsaWithLogging(Sarsa):
             for _ in range(num_episode):
                 state, _ = self.env.reset()
                 done = False
-                # timesteps = 0
+                action = np.random.choice(np.arange(self.num_action), p=self.policy[state])
                 while not done:
-                    action = np.random.choice(np.arange(self.num_action), p=self.policy[state])
                     next_state, reward, terminated, truncated, info = self.env.step(action=action)
                     done = terminated or truncated
                     
                     # Update Q function
-                    next_action = np.random.choice(np.arange(self.num_action), p=self.policy[next_state])
-                    td_error = (reward + self.gamma * self.Q[next_state][next_action] - self.Q[state][action])
-                    self.Q[state][action] += self.alpha * td_error
-                    
+                    next_action = self.update_q_function(state, action, reward, next_state)
+
                     # Update policy
                     self.improve_policy(state=state)
                     
                     state = next_state
+                    action = next_action
                     timesteps += 1
 
                 episode_lengths.append(timesteps)

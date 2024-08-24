@@ -141,7 +141,7 @@ class WindyGridWorldStochastic(WindyGridWorldKingsMoves):
 
         return new_x, new_y
 
-def animate_trajectory(env, trajectory, grid_size, goal_state):
+def animate_trajectory(env, trajectory, grid_size, goal_state, hold_frames=10):
     fig, ax = plt.subplots(figsize=(8, 6))
 
     # Set up grid
@@ -161,12 +161,20 @@ def animate_trajectory(env, trajectory, grid_size, goal_state):
     line, = ax.plot([], [], 'k--', lw=2)  # Path as a dashed line
     point, = ax.plot([], [], 'bo', markersize=10)  # Current position as a solid dot
 
+    # Check if the last state is the terminal state and add it if missing
+    if not env.is_goal_state(*divmod(trajectory[-1][0], env.width)):
+        final_state = env.goal_state[0] * env.width + env.goal_state[1]
+        trajectory.append((final_state, None))
+
     def init():
         line.set_data([], [])
         point.set_data([], [])
         return line, point
 
     def update(frame):
+        if frame >= len(trajectory):
+            frame = len(trajectory) - 1  # Hold at the last frame
+
         xdata, ydata = [], []
         for (state, action) in trajectory[:frame+1]:
             x, y = divmod(state, env.width)
@@ -178,7 +186,8 @@ def animate_trajectory(env, trajectory, grid_size, goal_state):
             point.set_data([xdata[-1]], [ydata[-1]])  # Wrap in list to ensure sequence
         return line, point
 
-    ani = FuncAnimation(fig, update, frames=len(trajectory), init_func=init, blit=True, interval=50, repeat=False)
+    # Create an animation with extra frames to hold the last state
+    ani = FuncAnimation(fig, update, frames=len(trajectory) + hold_frames, init_func=init, blit=True, interval=50, repeat=False)
     plt.show()
 
 if __name__ == '__main__':
