@@ -21,9 +21,9 @@ class MaximizationBiasDoubleQLearning(DoubleQLearning):
         self.Q2 = {}
         self.policy = {}
 
-        # State A (0) has 2 actions, State B (1) has 10 actions
+        # State A (0) has 2 actions, State B (1) has self.env.num_action_at_state_B actions
         for state in range(self.env.observation_space.n):
-            num_actions = 2 if state == 0 else 10
+            num_actions = 2 if state == 0 else self.env.num_action_at_state_B
             self.Q1[state] = np.zeros(num_actions)
             self.Q2[state] = np.zeros(num_actions)
             self.policy[state] = np.ones(num_actions) / num_actions
@@ -131,11 +131,11 @@ if __name__ == '__main__':
     set_seed()
     log_dir = os.path.dirname(os.path.abspath(__file__))
     ##### 0. Load environment and initiate policy #####
-    env = MaximizationBias()
+    env = MaximizationBias(num_action_at_state_B=5)
     agent = DoubleQLearningWithLogging(env=env)
 
     ##### 1. Use Double Q-learning to solve the Maximization Bias problem #####
-    num_episode = 5_000
+    num_episode = 1_000
     num_runs = 100
     window_size = 1
 
@@ -145,12 +145,12 @@ if __name__ == '__main__':
 
     # Plot the percentage of left actions taken over episodes
     plt.figure(figsize=(10, 6))
-    plt.plot(range(num_episode), smoothed_left_action_ratio, label="Double Q-learning (Averaged over 100 runs)")
+    plt.plot(range(num_episode), smoothed_left_action_ratio, label=f"Double Q-learning (Averaged over {num_runs} runs)")
     plt.xlabel('Episode')
     plt.ylabel('% Left Action in State A')
-    plt.title('Double Q-learning on Maximization Bias Problem (Averaged over 100 runs)')
+    plt.title(f'Double Q-learning on Maximization Bias Problem (Averaged over {num_runs} runs)')
     plt.grid(True)
 
-    plot_path = os.path.join(log_dir, 'double_q_learning_maximization_bias_avg_100runs.png')
+    plot_path = os.path.join(log_dir, f'double_q_learning_maximization_bias_avg_{num_runs}runs.png')
     plt.savefig(plot_path)
     plt.show()

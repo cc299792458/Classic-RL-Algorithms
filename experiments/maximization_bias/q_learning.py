@@ -22,9 +22,9 @@ class MaximizationBiasQLearning(QLearning):
         self.Q = {}
         self.policy = {}
 
-        # State A (0) has 2 actions, State B (1) has 10 actions
+        # State A (0) has 2 actions, State B (1) has several actions
         for state in range(self.env.observation_space.n):
-            num_actions = 2 if state == 0 else 10
+            num_actions = 2 if state == 0 else self.env.num_action_at_state_B
             self.Q[state] = np.zeros(num_actions)
             self.policy[state] = np.ones(num_actions) / num_actions
 
@@ -38,7 +38,7 @@ class MaximizationBiasQLearning(QLearning):
             done = False
             
             while not done:
-                num_actions = 2 if state == 0 else 10  # Adjust the number of actions based on state
+                num_actions = 2 if state == 0 else self.env.num_action_at_state_B  # Adjust the number of actions based on state
                 action = np.random.choice(np.arange(num_actions), p=self.policy[state])
                 if state == 0 and action == 0:
                     left_action_count += 1
@@ -83,7 +83,7 @@ class QLearningWithLogging(MaximizationBiasQLearning):
             done = False
             
             while not done:
-                num_actions = 2 if state == 0 else 10  # Adjust the number of actions based on state
+                num_actions = 2 if state == 0 else self.env.num_action_at_state_B  # Adjust the number of actions based on state
                 action = np.random.choice(np.arange(num_actions), p=self.policy[state])
                 if state == 0 and action == 0:
                     left_action_count += 1
@@ -124,11 +124,11 @@ if __name__ == '__main__':
     set_seed()
     log_dir = os.path.dirname(os.path.abspath(__file__))
     ##### 0. Load environment and initiate policy #####
-    env = MaximizationBias()
-    agent = QLearningWithLogging(env=env)
+    env = MaximizationBias(num_action_at_state_B=1)
+    agent = QLearningWithLogging(env=env, alpha=0.1)
 
     ##### 1. Use Q-learning to solve the Maximization Bias problem #####
-    num_episode = 5_000
+    num_episode = 10_000
     num_runs = 100
     window_size = 1
 
@@ -139,12 +139,12 @@ if __name__ == '__main__':
 
     # Plot the percentage of left actions taken over episodes
     plt.figure(figsize=(10, 6))
-    plt.plot(range(num_episode), smoothed_left_action_ratio, label="Q-learning (Averaged over 100 runs)")
+    plt.plot(range(num_episode), smoothed_left_action_ratio, label=f"Q-learning (Averaged over {num_runs} runs)")
     plt.xlabel('Episode')
     plt.ylabel('% Left Action in State A')
-    plt.title('Q-learning on Maximization Bias Problem (Averaged over 100 runs)')
+    plt.title(f'Q-learning on Maximization Bias Problem (Averaged over {num_runs} runs)')
     plt.grid(True)
 
-    plot_path = os.path.join(log_dir, 'q_learning_maximization_bias_avg_100runs.png')
+    plot_path = os.path.join(log_dir, f'q_learning_maximization_bias_avg_{num_runs}runs.png')
     plt.savefig(plot_path)
     plt.show()

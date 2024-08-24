@@ -3,11 +3,12 @@ import gymnasium as gym
 from gymnasium import spaces
 
 class MaximizationBias(gym.Env):
-    def __init__(self):
+    def __init__(self, num_action_at_state_B=10):
         super(MaximizationBias, self).__init__()
         
-        # Define action space: two actions in state A (left (0) and right (1)), and 10 actions in state B
-        self.action_space = spaces.Discrete(10)
+        self.num_action_at_state_B = num_action_at_state_B
+        # Define action space: two actions in state A (left (0) and right (1)), and several actions in state B
+        self.action_space = spaces.Discrete(self.num_action_at_state_B)
         
         # Define observation space: two non-terminal states A (0) and B (1), and a terminal state (2)
         self.observation_space = spaces.Discrete(3)
@@ -33,9 +34,9 @@ class MaximizationBias(gym.Env):
             else:
                 raise ValueError(f"Invalid action in state A: {action}")
         elif self.state == 1:  # In state B
-            if action in range(10):  # Any action in state B leads to termination
+            if action in range(self.num_action_at_state_B):  # Any action in state B leads to termination
                 self.state = 2  # Transition to terminal state
-                reward = np.random.normal(0.1, 1.0)  # Sample reward from N(0.1, 1.0)
+                reward = np.random.normal(0.1, 0.2)  # Sample reward from N(-0.1, 1.0)
                 self.done = True
             else:
                 raise ValueError(f"Invalid action in state B: {action}")
@@ -56,21 +57,29 @@ class MaximizationBias(gym.Env):
         pass
 
 if __name__ == "__main__":
-    env = MaximizationBias()
-    
-    # Run a few episodes to demonstrate environment behavior
-    for episode in range(5):
+    env = MaximizationBias(num_action_at_state_B=1)
+    num_episode = 1_000
+    rewards_at_B = []
+
+    # Run 100 episodes
+    for episode in range(num_episode):
         state, _ = env.reset()
         done = False
-        print(f"Episode {episode} starts")
-        
+
         while not done:
             if state == 0:
-                action = env.action_space.sample() % 2  # Randomly sample an action for state A
+                action = 0  # Always choose left to go to state B
             else:
                 action = env.action_space.sample()  # Randomly sample an action for state B
                 
             next_state, reward, done, _, _ = env.step(action)
-            env.render()
-            print(f"Action: {action}, Reward: {reward}")
-        print(f"Episode {episode} ends\n")
+            
+            # If we are in state B, record the reward
+            if state == 1:
+                rewards_at_B.append(reward)
+
+            state = next_state
+
+    # Calculate the average reward received in state B
+    average_reward_at_B = np.mean(rewards_at_B)
+    print(f"Average reward at state B over {num_episode} episodes: {average_reward_at_B}")
