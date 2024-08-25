@@ -32,7 +32,8 @@ class MaximizationBiasQLearning(QLearning):
         self.reset()
         left_action_count = 0  # To track how often left action is taken
         left_action_ratio = []
-        
+        max_q_values_B = []  # To store the max Q-value for state B
+
         for index in range(num_episode):
             state, info = self.env.reset()
             done = False
@@ -57,8 +58,11 @@ class MaximizationBiasQLearning(QLearning):
 
             # Calculate and store the left action ratio after each episode
             left_action_ratio.append(left_action_count / (index + 1))
-        
-        return left_action_ratio
+
+            # Store the maximum Q-value for state B
+            max_q_values_B.append(np.max(self.Q[1]))  # State B is 1
+
+        return left_action_ratio, max_q_values_B
     
     def improve_policy(self, state):
         tolerance = 1e-8
@@ -80,6 +84,7 @@ class QLearningWithLogging(MaximizationBiasQLearning):
         left_action_ratio = []
         q_values_A = []  # To store Q-values for state A
         q_values_B = []  # To store Q-values for state B
+        max_q_values_B = []  # To store the max Q-value for state B
 
         for index in range(num_episode):
             state, info = self.env.reset()
@@ -108,48 +113,55 @@ class QLearningWithLogging(MaximizationBiasQLearning):
             # Store Q-values for state B (this may involve multiple actions)
             q_values_B.append(self.Q[1].copy())
 
+            # Store the maximum Q-value for state B
+            max_q_values_B.append(np.max(self.Q[1]))  # State B is 1
+
             # Calculate and store the left action ratio after each episode
             left_action_ratio.append(left_action_count / (index + 1))
         
-        return left_action_ratio, q_values_A, q_values_B
+        return left_action_ratio, q_values_A, q_values_B, max_q_values_B
 
 def run_multiple_experiments(agent, num_episodes_per_run, num_runs):
     all_runs_left_action_ratios = []
     all_runs_q_values_A = []
     all_runs_q_values_B = []
+    all_runs_max_q_values_B = []
 
     for _ in tqdm(range(num_runs), desc="Running experiments"):
-        left_action_ratio, q_values_A, q_values_B = agent.estimation_and_control(num_episodes_per_run)
+        left_action_ratio, q_values_A, q_values_B, max_q_values_B = agent.estimation_and_control(num_episodes_per_run)
         all_runs_left_action_ratios.append(left_action_ratio)
         all_runs_q_values_A.append(q_values_A)
         all_runs_q_values_B.append(q_values_B)
+        all_runs_max_q_values_B.append(max_q_values_B)
 
     # Convert list of lists to numpy arrays for easier manipulation
     all_runs_left_action_ratios = np.array(all_runs_left_action_ratios)
     all_runs_q_values_A = np.array(all_runs_q_values_A)
     all_runs_q_values_B = np.array(all_runs_q_values_B)
+    all_runs_max_q_values_B = np.array(all_runs_max_q_values_B)
 
     # Compute the average across the runs
     avg_left_action_ratio = np.mean(all_runs_left_action_ratios, axis=0)
     avg_q_values_A = np.mean(all_runs_q_values_A, axis=0)
     avg_q_values_B = np.mean(all_runs_q_values_B, axis=0)
+    avg_max_q_values_B = np.mean(all_runs_max_q_values_B, axis=0)
 
-    return avg_left_action_ratio, avg_q_values_A, avg_q_values_B
+    return avg_left_action_ratio, avg_q_values_A, avg_q_values_B, avg_max_q_values_B
 
 if __name__ == '__main__':
     set_seed()
     log_dir = os.path.dirname(os.path.abspath(__file__))
     ##### 0. Load environment and initiate policy #####
-    env = MaximizationBias(num_action_at_state_B=3)  # Set the number of actions at state B
-    agent = QLearningWithLogging(env=env, alpha=0.1)
+    env = MaximizationBias(num_action_at_state_B=10)  # Set the number of actions at state B
+    agent = QLearningWithLogging(env=env, alpha=0.01)  # Use small alpha to stablize learning
 
     ##### 1. Use Q-learning to solve the Maximization Bias problem #####
-    num_episode = 3_000
+    num_episode = 10_000
     num_runs = 100
     window_size = 1
 
     agent.reset()
-    avg_left_action_ratio, avg_q_values_A, avg_q_values_B = run_multiple_experiments(agent, num_episodes_per_run=num_episode, num_runs=num_runs)
+    avg_left_action_ratio, avg_q_values_A, avg_q_values_B, avg_max_q_values_B = run_multiple_experiments(agent, num_episodes_per_run=num_episode, num_runs=num_runs)
 
     smoothed_left_action_ratio = moving_average_with_padding(data=avg_left_action_ratio, window_size=window_size)
 
@@ -187,5 +199,16 @@ if __name__ == '__main__':
     plt.grid(True)
     plt.legend()
     plot_path = os.path.join(log_dir, f'q_learning_q_values_B_avg_{num_runs}runs.png')
+    plt.savefig(plot_path)
+    plt.show()
+
+    # Plot the maximum Q-value for state B over episodes
+    plt.figure(figsize=(10, 6))
+    plt.plot(range(num_episode), avg_max_q_values_B, label="Max Q(B)")
+    plt.xlabel('Episode')
+    plt.ylabel('Max Q-value for State B')
+    plt.title(f'Max Q-value for State B (Averaged over {num_runs} runs)')
+    plt.grid(True)
+    plot_path = os.path.join(log_dir, f'q_learning_max_q_values_B_avg_{num_runs}runs.png')
     plt.savefig(plot_path)
     plt.show()

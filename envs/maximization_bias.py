@@ -36,7 +36,7 @@ class MaximizationBias(gym.Env):
         elif self.state == 1:  # In state B
             if action in range(self.num_action_at_state_B):  # Any action in state B leads to termination
                 self.state = 2  # Transition to terminal state
-                reward = np.random.normal(0.1, 0.2)  # Sample reward from N(-0.1, 1.0)
+                reward = np.random.normal(-0.1, 1.0)  # Sample reward from N(-0.1, 1.0)
                 self.done = True
             else:
                 raise ValueError(f"Invalid action in state B: {action}")
@@ -58,7 +58,7 @@ class MaximizationBias(gym.Env):
 
 if __name__ == "__main__":
     env = MaximizationBias(num_action_at_state_B=1)
-    num_episode = 300
+    num_episode = 100
     rewards_at_B = []
 
     # Run 100 episodes
