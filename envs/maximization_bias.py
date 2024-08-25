@@ -58,7 +58,7 @@ class MaximizationBias(gym.Env):
 
 if __name__ == "__main__":
     env = MaximizationBias(num_action_at_state_B=1)
-    num_episode = 1_000
+    num_episode = 300
     rewards_at_B = []
 
     # Run 100 episodes
