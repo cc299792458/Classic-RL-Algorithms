@@ -1,1 +1,1 @@
-from .sarsa import Sarsa, ExpectedSarsa
+from .sarsa import Sarsa, ExpectedSarsa, NStepSarsa

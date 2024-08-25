@@ -82,6 +82,27 @@ class Sarsa:
     def set_alpha(self, alpha):
         self.alpha = alpha
 
+    def print_value_function(self):
+        """Print the current value function."""
+        if hasattr(self.env, '_print_value_function'):
+            self.env._print_value_function(self.value_function)
+        else:
+            print(self.value_function)
+
+    def print_q_function(self):
+        """Print the current Q function."""
+        if hasattr(self.env, '_print_q_function'):
+            self.env._print_q_function(self.Q)
+        else:
+            print(self.Q)
+
+    def print_policy(self):
+        """Print the current policy."""
+        if hasattr(self.env, '_print_policy'):
+            self.env._print_policy(self.policy)
+        else:
+            print(self.policy)
+
 class ExpectedSarsa(Sarsa):
     def estimation_and_control(self, num_episode):
         self.reset()
@@ -163,16 +184,20 @@ class NStepSarsa(Sarsa):
 
     def update_q_function(self, states, actions, rewards, tau, T):
         """
-        Update the Q-function based on the n-step return G(tau).
-        
-        :param states: List of states in the trajectory.
-        :param actions: List of actions in the trajectory.
-        :param rewards: List of rewards in the trajectory.
-        :param tau: Time whose estimate is being updated.
-        :param T: Time when the episode ends.
+            Update the Q-function based on the n-step return G(tau).
+            
+            :param states: List of states in the trajectory.
+            :param actions: List of actions in the trajectory.
+            :param rewards: List of rewards in the trajectory.
+            :param tau: Time whose estimate is being updated.
+            :param T: Time when the episode ends.
         """
-        # Compute G(tau) with n-step backup
-        G = sum([self.gamma**(i-tau-1) * rewards[i] for i in range(tau+1, min(tau+self.n, T) + 1)])
+        # Calculate the sum of rewards with discounting
+        G = 0
+        for i in range(tau + 1, min(tau + self.n, T) + 1):
+            G += self.gamma**(i - tau - 1) * rewards[i - 1]  # rewards[i - 1] because rewards are indexed from 0
+
+        # If the trajectory does not terminate within n steps, add the estimated future value
         if tau + self.n < T:
             G += self.gamma**self.n * self.Q[states[tau + self.n]][actions[tau + self.n]]
         
