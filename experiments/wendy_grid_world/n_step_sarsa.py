@@ -62,7 +62,7 @@ class NStepSarsaWithLogging(NStepSarsa):
 if __name__ == '__main__':
     set_seed()
     log_dir = os.path.dirname(os.path.abspath(__file__))
-    ##### 0. Load environment#####
+    ##### 0. Load environment #####
     env = WindyGridWorld(max_episode_length=False)
     
     # Instantiate the NStepSarsaWithLogging class with different values of n

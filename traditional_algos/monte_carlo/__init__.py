@@ -1,1 +1,1 @@
-from .monte_carlo import MonteCarlo
+from .monte_carlo import MonteCarlo, GradientMonteCarlo, FunctionApproximator
