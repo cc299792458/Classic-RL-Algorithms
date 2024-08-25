@@ -174,3 +174,7 @@ class MonteCarlo:
 class OffPolicyMonteCarlo(MonteCarlo):
     """Implement Off-Policy Monte Carlo via Importance Sampling."""
     pass
+
+class GradientMonteCarlo(MonteCarlo):
+    """Gradient Monte Carlo"""
+    pass
