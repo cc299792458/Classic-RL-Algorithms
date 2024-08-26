@@ -1,3 +1,7 @@
+"""
+    Double Q Learning
+"""
+
 import numpy as np
 
 from .q_learning import QLearning
