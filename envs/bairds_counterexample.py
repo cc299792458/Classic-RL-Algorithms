@@ -68,7 +68,6 @@ class BairdsCounterexample(gym.Env):
     def render(self, mode='human'):
         print(f"Current state: {self.state}")
 
-# Example usage
 if __name__ == "__main__":
     env = BairdsCounterexample()
     state, _ = env.reset()

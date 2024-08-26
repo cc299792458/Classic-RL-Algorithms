@@ -34,7 +34,6 @@ class GradientMonteCarlo(MonteCarlo):
         
         self.approximation_function = approximation_function
         super().__init__(env, gamma=gamma, epsilon=0.0)
-        self.reset()
 
     def reset(self):
         """Reset the approximation function's parameters."""
