@@ -1,7 +1,12 @@
+"""
+    Gradient Monte Carlo
+"""
+
 import numpy as np
 import gymnasium as gym
 
 from tqdm import tqdm
+from .monte_carlo import MonteCarlo
 
 class FunctionApproximator:
     """Base class for all function approximators."""
@@ -18,19 +23,17 @@ class FunctionApproximator:
         """Print the current parameters of the approximator."""
         raise NotImplementedError("The print_parameters method must be implemented by subclasses.")
 
-class GradientMonteCarlo:
+class GradientMonteCarlo(MonteCarlo):
     """Gradient Monte Carlo with General Function Approximation"""
 
     def __init__(self, env: gym.Env, gamma=1.0, alpha=0.01, approximation_function: FunctionApproximator = None):
-        self.env = env
-        self.gamma = gamma
         self.alpha = alpha
-        
         # Ensure an approximation function is provided
         if approximation_function is None:
             raise ValueError("An approximation function must be provided.")
         
         self.approximation_function = approximation_function
+        super().__init__(env, gamma=gamma, epsilon=0.0)
         self.reset()
 
     def reset(self):
@@ -51,7 +54,6 @@ class GradientMonteCarlo:
             state = next_state
 
         return episode
-
     def update_value_function(self, episode):
         """Perform the Gradient Monte Carlo update using the provided approximation function."""
         G = 0
