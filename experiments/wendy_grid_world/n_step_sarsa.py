@@ -2,6 +2,8 @@
     Use N Step Sarsa to solve Wendy Grid World
 """
 
+# Setting n=1000 won't diverge, seems like it's stabler than sarsa lambda with setting a big lambda like 1
+
 import os
 import numpy as np
 import matplotlib.pyplot as plt
@@ -67,6 +69,7 @@ if __name__ == '__main__':
     
     # Instantiate the NStepSarsaWithLogging class with different values of n
     n_values = [i+1 for i in range(10)]
+    n_values.append(20)
     num_episode = 10
     num_runs = 50
 

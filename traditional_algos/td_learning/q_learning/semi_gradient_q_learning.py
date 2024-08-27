@@ -16,7 +16,6 @@ class SemiGradientQLearning(QLearning):
         # self.weights = np.ones((self.num_action, self.feature_dim))     
         # self.weights = np.array([[1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 10.0, 1.0],
         #                          [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 10.0, 1.0]])
-        
 
     def default_feature_function(self, state):
         """
