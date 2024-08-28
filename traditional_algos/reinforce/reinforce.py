@@ -9,6 +9,9 @@ class PolicyBase:
     def __init__(self):
         pass
 
+    def reset(self):
+        raise NotImplementedError
+
     def action_probabilities(self):
         raise NotImplementedError
 
@@ -19,29 +22,41 @@ class PolicyBase:
         raise NotImplementedError
 
 class LinearApproximator(PolicyBase):
-    def __init__(self, weights=None):
-        self.w = weights if weights is not None else np.array([3.0, 0.0])
+    def __init__(self, gamma=1.0, weights=None):
+        self.gamma = gamma
+        self.initial_weights = weights
+        self.reset()
+
+    def reset(self):
+        self.w = self.initial_weights if self.initial_weights is not None else np.array([2.0, -2.0])
 
     def action_probabilities(self):
         """Compute action probabilities using softmax."""
         exp_w = np.exp(self.w)
         return exp_w / np.sum(exp_w)
 
-    def select_action(self):
+    def select_action(self, state):
         """Select action based on the probabilities."""
         probs = self.action_probabilities()
         action = np.random.choice(len(self.w), p=probs)
-        return action, np.log(probs[action])
 
-    def update(self, log_probs, returns, alpha):
+        # Compute the gradient of the log-probability
+        dlog_pi = -probs  # This subtracts the probability distribution from the one-hot encoded action
+        dlog_pi[action] += 1
+        
+        return action, dlog_pi
+
+    def update(self, dlog_pis, returns, alpha):
         """Update weights using the REINFORCE algorithm."""
         gradients = np.zeros_like(self.w)
-        for log_prob, return_ in zip(log_probs, returns):
-            gradients += log_prob * return_
+        for t, (dlog_pi, return_) in enumerate(zip(dlog_pis, returns)):
+            # Incorporate the discount factor gamma
+            discounted_return = (self.gamma ** t) * return_
+            gradients += dlog_pi * discounted_return
         self.w += alpha * gradients
 
 class REINFORCE:
-    def __init__(self, env: gym.Env, gamma=1.0, alpha=2e-13, policy: PolicyBase = None) -> None:
+    def __init__(self, env: gym.Env, gamma=1.0, alpha=5e-4, policy: PolicyBase = None) -> None:
         self.env = env
         self.gamma = gamma
         self.alpha = alpha
@@ -49,6 +64,9 @@ class REINFORCE:
         self.policy = policy
         if policy == None:
             raise ValueError("An approximator must be provided.")
+    
+    def reset(self):
+        self.policy.reset()
     
     def compute_returns(self, rewards):
         """Compute the returns from the rewards."""
@@ -61,26 +79,23 @@ class REINFORCE:
     
     def train(self, num_episodes):
         """Monte Carlo Roll Out"""
+        self.reset()
         for episode in range(num_episodes):
             state, _ = self.env.reset()
             done = False
 
-            log_probs = []
+            dlog_pis = []
             rewards = []
 
             while not done:
-                action, log_prob = self.policy.select_action()
+                action, dlog_pi = self.policy.select_action(state)
                 next_state, reward, done, truncated, _ = self.env.step(action)
 
-                log_probs.append(log_prob)
+                dlog_pis.append(dlog_pi)
                 rewards.append(reward)
 
                 state = next_state
 
             returns = self.compute_returns(rewards)
-            self.policy.update(log_probs, returns, self.alpha)
-
-            if episode % 100 == 0:
-                total_return = sum(rewards)
-                print(f"Episode {episode}, Total Return: {total_return}")
+            self.policy.update(dlog_pis, returns, self.alpha)
     
