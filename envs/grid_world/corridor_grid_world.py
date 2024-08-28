@@ -1,11 +1,11 @@
 """
-    Corridor Grid World with Stochastic Switched Action. 
+    Corridor GridWorld with Stochastic Switched Action. 
 
     The Example 13.1 in RL Book.
 """
 
 from gymnasium import spaces
-from grid_world import GridWorld  # Assuming your base GridWorld class is in grid_world.py
+from .grid_world import GridWorld  # Assuming your base GridWorld class is in grid_world.py
 
 class CorridorGridWorld(GridWorld):
     def __init__(self):
