@@ -76,9 +76,9 @@ if __name__ == '__main__':
     plt.plot(average_returns)
     plt.xlabel('Episode')
     plt.ylabel('Average Total Return')
-    plt.title(f'Average Total Return over {num_runs} Runs')
+    plt.title(f'REINFORCE\nAverage Total Return over {num_runs} Runs')
     plt.grid(True)
-    plt.savefig(os.path.join(log_dir, 'average_total_return.png'))  # Save the plot
+    plt.savefig(os.path.join(log_dir, 'reinforce_average_total_return.png'))  # Save the plot
     plt.show()
 
     # Plot the weights over episodes
@@ -87,8 +87,8 @@ if __name__ == '__main__':
         plt.plot(average_weights[:, i], label=f'Weight {i + 1}')
     plt.xlabel('Episode')
     plt.ylabel('Weight Value')
-    plt.title('Weights Evolution over Episodes')
+    plt.title('REINFORCE\nWeights Evolution over Episodes')
     plt.legend()
     plt.grid(True)
-    plt.savefig(os.path.join(log_dir, 'weights_evolution.png'))  # Save the plot
+    plt.savefig(os.path.join(log_dir, 'reinforce_weights_evolution.png'))  # Save the plot
     plt.show()

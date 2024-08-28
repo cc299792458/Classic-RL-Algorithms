@@ -19,8 +19,8 @@ class PolicyBase:
         raise NotImplementedError
 
 class LinearApproximator(PolicyBase):
-    def __init__(self, weights=None):
-        self.initial_weights = weights
+    def __init__(self, initial_weights=None):
+        self.initial_weights = initial_weights
         self.reset()
 
     def reset(self):
@@ -87,7 +87,7 @@ class REINFORCE:
             self.update(dlog_pis, returns)
 
     def update(self, dlog_pis, returns):
-        """Update the policy weights using the REINFORCE algorithm."""
+        """Update the policy weights using the monte carlo method."""
         gradients = np.zeros_like(self.policy.w)
         for t, (dlog_pi, return_) in enumerate(zip(dlog_pis, returns)):
             # Incorporate the discount factor gamma
