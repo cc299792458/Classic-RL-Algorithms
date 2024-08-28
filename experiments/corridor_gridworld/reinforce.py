@@ -40,7 +40,7 @@ class REINFORCEWithLogging(REINFORCE):
                 state = next_state
 
             returns = self.compute_returns(rewards)
-            self.policy.update(dlog_pis, returns, self.alpha)
+            self.update(dlog_pis, returns)
 
             undiscounted_return = sum(rewards)
             episode_returns.append(undiscounted_return)
@@ -53,9 +53,8 @@ if __name__ == '__main__':
     ##### 0. Load environment and agent #####
     env = CorridorGridWorld()
 
-    gamma = 0.99
-    policy = LinearApproximator(gamma=gamma)
-    agent = REINFORCEWithLogging(env=env, gamma=gamma, policy=policy)
+    policy = LinearApproximator()
+    agent = REINFORCEWithLogging(env=env, gamma=0.99, policy=policy)
 
     ##### 1. Train #####
     num_episodes = 1000

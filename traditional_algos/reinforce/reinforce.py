@@ -17,13 +17,9 @@ class PolicyBase:
 
     def select_action(self):
         raise NotImplementedError
-    
-    def update(self):
-        raise NotImplementedError
 
 class LinearApproximator(PolicyBase):
-    def __init__(self, gamma=1.0, weights=None):
-        self.gamma = gamma
+    def __init__(self, weights=None):
         self.initial_weights = weights
         self.reset()
 
@@ -46,15 +42,6 @@ class LinearApproximator(PolicyBase):
         
         return action, dlog_pi
 
-    def update(self, dlog_pis, returns, alpha):
-        """Update weights using the REINFORCE algorithm."""
-        gradients = np.zeros_like(self.w)
-        for t, (dlog_pi, return_) in enumerate(zip(dlog_pis, returns)):
-            # Incorporate the discount factor gamma
-            discounted_return = (self.gamma ** t) * return_
-            gradients += dlog_pi * discounted_return
-        self.w += alpha * gradients
-
 class REINFORCE:
     def __init__(self, env: gym.Env, gamma=1.0, alpha=5e-4, policy: PolicyBase = None) -> None:
         self.env = env
@@ -63,7 +50,7 @@ class REINFORCE:
 
         self.policy = policy
         if policy == None:
-            raise ValueError("An approximator must be provided.")
+            raise ValueError("A policy must be provided.")
     
     def reset(self):
         self.policy.reset()
@@ -97,5 +84,13 @@ class REINFORCE:
                 state = next_state
 
             returns = self.compute_returns(rewards)
-            self.policy.update(dlog_pis, returns, self.alpha)
-    
+            self.update(dlog_pis, returns)
+
+    def update(self, dlog_pis, returns):
+        """Update the policy weights using the REINFORCE algorithm."""
+        gradients = np.zeros_like(self.policy.w)
+        for t, (dlog_pi, return_) in enumerate(zip(dlog_pis, returns)):
+            # Incorporate the discount factor gamma
+            discounted_return = (self.gamma ** t) * return_
+            gradients += dlog_pi * discounted_return
+        self.policy.w += self.alpha * gradients
