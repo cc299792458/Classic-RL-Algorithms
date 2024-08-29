@@ -28,7 +28,7 @@ class REINFORCEWithBaseline(REINFORCE):
         self.baseline.reset()
 
     def update(self, dlog_pis, returns, state_vectors):
-        """Update the policy and baseline weights using the Monte Carlo method."""
+        """Update the policy and baseline weights using the monte carlo method."""
         gradients_policy = np.zeros_like(self.policy.w)
         gradients_baseline = np.zeros_like(self.baseline.w)
         for t, (dlog_pi, return_, state_vector) in enumerate(zip(dlog_pis, returns, state_vectors)):

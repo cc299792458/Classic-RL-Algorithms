@@ -2,6 +2,8 @@
     Use REINFORCE with Baseline to solve Corridor GridWorld
 """
 
+# TODO: Why it stucks sometimes? Especially when setting a large alpha
+
 import os
 import numpy as np
 import matplotlib.pyplot as plt
