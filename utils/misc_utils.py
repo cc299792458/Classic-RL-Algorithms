@@ -1,17 +1,15 @@
+import torch
 import random
 import numpy as np
-# import torch
-
-# TODO: Install torch
 
 def set_seed(seed=42):
     random.seed(seed)
     np.random.seed(seed)
-    # torch.manual_seed(seed)
-    # torch.cuda.manual_seed(seed)
-    # torch.cuda.manual_seed_all(seed)
-    # torch.backends.cudnn.deterministic = True
-    # torch.backends.cudnn.benchmark = False
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.cuda.manual_seed_all(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
 
 def moving_average_with_padding(data, window_size):
     """Compute the moving average of the data with padding to maintain the original length."""
