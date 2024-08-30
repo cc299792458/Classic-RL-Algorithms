@@ -2,12 +2,12 @@ import time
 import gymnasium as gym
 
 # Create the environment
-env = gym.make("MountainCar-v0", render_mode="human")
+env = gym.make("MountainCarContinuous-v0", render_mode="human")
 
 state, info = env.reset()
 done = False
 while not done:
-    # Select an action (0: push left, 1: do nothing, 2: push right)
+    # Select an action
     action = env.action_space.sample()  # Take a random action
     next_state, reward, terminated, truncated, info = env.step(action)
     env.render()
