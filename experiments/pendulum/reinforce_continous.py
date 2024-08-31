@@ -1,8 +1,8 @@
 """
-    REINFORCE with Continuous Action Parameterization
+    REINFORCE with Continuous Action Parameterization solving Pendulum
 """
 
-# TODO: Why it is slower that I assume?
+# TODO: Modify the network architecture or the hyperparameters to train the env successfully.
 
 import os
 import torch
@@ -12,11 +12,20 @@ import matplotlib.pyplot as plt
 from torch import nn
 from tqdm import tqdm
 from utils.misc_utils import set_seed
-from traditional_algos.reinforce import REINFORCEContinuous, PolicyNetwork
+from traditional_algos.reinforce import REINFORCEContinuous, PolicyNetwork, ValueNetwork
 
 class REINFORCEContinuousLogging(REINFORCEContinuous):
-    def __init__(self, env: gym.Env, gamma=0.99, alpha=1e-3, policy: nn.Module = None, device=None, save_interval=10, checkpoint_dir=None):
-        super().__init__(env, gamma, alpha, policy, device)
+    def __init__(self, 
+                 env: gym.Env, 
+                 gamma=0.99,
+                 lr_policy=1e-4, 
+                 lr_baseline=3e-4, 
+                 policy: nn.Module = None, 
+                 baseline: nn.Module = None, 
+                 device=None, 
+                 save_interval=10, 
+                 checkpoint_dir=None):
+        super().__init__(env, gamma, lr_policy, lr_baseline, policy, baseline, device)
         self.save_interval = save_interval
         self.checkpoint_dir = checkpoint_dir
         if checkpoint_dir:
@@ -32,6 +41,7 @@ class REINFORCEContinuousLogging(REINFORCEContinuous):
 
             log_probs = []
             rewards = []
+            states = []
 
             while not done:
                 action, log_prob = self.select_action(state)
@@ -40,11 +50,12 @@ class REINFORCEContinuousLogging(REINFORCEContinuous):
 
                 log_probs.append(log_prob)
                 rewards.append(reward)
+                states.append(torch.tensor(state, dtype=torch.float32).to(self.device))
 
                 state = next_state
 
             returns = self.compute_returns(rewards)
-            self.update(log_probs, returns)
+            self.update(log_probs, returns, states)
 
             episode_return = sum(rewards)
             episode_returns.append(episode_return)
@@ -58,12 +69,18 @@ class REINFORCEContinuousLogging(REINFORCEContinuous):
     def save_checkpoint(self, episode):
         """Save the model checkpoint."""
         checkpoint_path = os.path.join(self.checkpoint_dir, f'policy_checkpoint_{episode}.pth')
-        torch.save(self.policy.state_dict(), checkpoint_path)
+        torch.save({
+            'policy_state_dict': self.policy.state_dict(),
+            'baseline_state_dict': self.baseline.state_dict()
+        }, checkpoint_path)
 
     def load_checkpoint(self, checkpoint_path):
         """Load the model checkpoint."""
-        self.policy.load_state_dict(torch.load(checkpoint_path, weights_only=True))
+        checkpoint = torch.load(checkpoint_path)
+        self.policy.load_state_dict(checkpoint['policy_state_dict'])
+        self.baseline.load_state_dict(checkpoint['baseline_state_dict'])
         self.policy.to(self.device)
+        self.baseline.to(self.device)
 
     def test_agent(self, env, num_episodes=1):
         """Test the agent using the loaded policy checkpoint."""
@@ -81,31 +98,35 @@ class REINFORCEContinuousLogging(REINFORCEContinuous):
                 state = next_state
 
                 env.render()
+                print(f'state: {state}')
 
             print(f"Episode {episode + 1}: Total Reward = {total_reward}")
 
 if __name__ == '__main__':
     set_seed()
     # Initialize the environment and device
-    env = gym.make("MountainCarContinuous-v0")
+    env = gym.make("Pendulum-v1")
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    # Initialize the policy network and REINFORCE agent with logging
+    # Initialize the policy network, value network (baseline), and REINFORCE agent with logging
     policy = PolicyNetwork(input_dim=env.observation_space.shape[0], output_dim=env.action_space.shape[0])
+    baseline = ValueNetwork(input_dim=env.observation_space.shape[0])
     checkpoint_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'checkpoints')
 
     agent = REINFORCEContinuousLogging(
         env=env,
         gamma=0.99,
-        alpha=1e-3,
+        lr_policy=1e-4,
+        lr_baseline=3e-4,
         policy=policy,
+        baseline=baseline,
         device=device,
         save_interval=10,  # Save every 10 episodes
         checkpoint_dir=checkpoint_dir
     )
 
     # Train the agent
-    num_episodes = 200
+    num_episodes = 2000
     returns = agent.train(num_episodes)
 
     # Plot the returns over episodes and save the plot
@@ -113,14 +134,14 @@ if __name__ == '__main__':
     plt.plot(returns)
     plt.xlabel('Episode')
     plt.ylabel('Total Return')
-    plt.title('REINFORCE Continuous - Mountain Car')
+    plt.title('REINFORCE Continuous - Pendulum')
     plt.grid(True)
     log_dir = os.path.dirname(os.path.abspath(__file__))
-    plt.savefig(os.path.join(log_dir, 'reinforce_continuous_mountain_car.png'))
+    plt.savefig(os.path.join(log_dir, 'reinforce_continuous_pendulum.png'))
     plt.show()
 
     # Create a new environment instance for testing with rendering enabled
-    test_env = gym.make("MountainCarContinuous-v0", render_mode='human')
+    test_env = gym.make("Pendulum-v1", render_mode='human')
 
     # Test and render the agent with different checkpoints
     for checkpoint_episode in range(10, num_episodes + 1, 10):
