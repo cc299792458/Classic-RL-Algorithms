@@ -1,3 +1,7 @@
+"""
+    Epsilon Greedy (with only one state) 
+"""
+
 import numpy as np
 import gymnasium as gym
 

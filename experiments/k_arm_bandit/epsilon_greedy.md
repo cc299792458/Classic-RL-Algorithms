@@ -1,0 +1,5 @@
+**Exploring the k-armed bandit problem using the epsilon-greedy strategy with varying epsilon values.**
+
+From this experiment, we can observe that:
+- The epsilon-greedy method facilitates better exploration compared to other methods, but it does not necessarily result in better performance overall. This is because a high epsilon value introduces more randomness, which can reduce the policy's performance.
+- A larger epsilon tends to yield better performance initially, as it promotes exploration. However, a smaller epsilon generally performs better in the long run. For example, we can see that epsilon=0.2 (represented by the purple line) learns faster at the beginning compared to epsilon=0.1achieves a higher asymptotic value. It is expected that with a sufficiently large number of timesteps, epsilon=0.001 should perform the best in this set of experiments.
