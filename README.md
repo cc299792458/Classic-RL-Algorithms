@@ -9,7 +9,7 @@ This repository is still in development, with the traditional algorithms section
 **Reinforcement learning is fascinating, and I wish this repository will be helpful to others who share the same interest!**
 
 ## The list of traditional ones is:
-- Epsilon Greedy
+- [Epsilon Greedy](https://github.com/cc299792458/Classic-RL-Algorithms/tree/main/traditional_algos/epsilon_greedy)
 - Dynamic Programming
   - Policy Iteration 
   - Value Iteration
