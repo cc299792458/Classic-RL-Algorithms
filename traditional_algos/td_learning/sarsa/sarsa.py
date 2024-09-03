@@ -9,6 +9,13 @@ from tqdm import tqdm
 from utils.gym_utils import get_observation_shape
 
 class Sarsa:
+    """
+        Sarsa is an on-policy reinforcement learning algorithm that estimates the 
+        action-value function (Q-function) and improves the policy simultaneously. 
+        The algorithm is named after the sequence of events (State, Action, Reward,
+        next State, next Action) it updates at each step. It uses an epsilon-greedy 
+        policy to balance exploration and exploitation.
+    """
     def __init__(self, env: gym.Env, gamma=1.0, epsilon=0.1, alpha=0.1, initial_policy=None) -> None:
         self.env = env
         self.gamma = gamma  # Discounting rate
@@ -104,6 +111,14 @@ class Sarsa:
             print(self.policy)
 
 class ExpectedSarsa(Sarsa):
+    """
+        Expected Sarsa is an extension of the Sarsa algorithm that estimates the 
+        action-value function (Q-function) using the expected value of the next 
+        action. Unlike Sarsa, which depends on the next action actually taken, 
+        Expected Sarsa calculates the expected Q value based on the current policy. 
+        This approach can result in more stable learning, as it reduces the variance 
+        introduced by the randomness in action selection.
+    """
     def estimation_and_control(self, num_episode):
         self.reset()
         with tqdm(total=num_episode) as pbar:

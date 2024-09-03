@@ -48,7 +48,7 @@ if __name__ == '__main__':
     env = WindyGridWorld(max_episode_length=False)
     agent = SarsaWithLogging(env=env)
 
-    ##### 1. Use sarsa to solve wendy grid world #####
+    ##### 1. Use sarsa to solve windy grid world #####
     num_episode = 2000
     agent.reset()
     episode_lengths = agent.estimation_and_control(num_episode=num_episode)
