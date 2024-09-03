@@ -1,5 +1,5 @@
 """
-    Use N Step Sarsa to solve Grid World
+    Use N Step Sarsa to solve Grid World, used for debugging 
 """
 
 import os

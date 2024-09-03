@@ -1,5 +1,5 @@
 """
-    Double Q Learning
+    Double Q-Learning
 """
 
 import numpy as np
@@ -7,6 +7,10 @@ import numpy as np
 from .q_learning import QLearning
 
 class DoubleQLearning(QLearning):
+    """
+        Double Q-Learning is a variant of Q-Learning designed to reduce overestimation bias in Q-value estimates. 
+        It does this by maintaining two separate Q-value tables and updating them alternately.
+    """
     def reset(self):
         super().reset()
         self.Q1 = np.zeros_like(self.Q)  # Initialize second Q-table

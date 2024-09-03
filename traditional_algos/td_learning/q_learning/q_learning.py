@@ -9,6 +9,10 @@ from tqdm import tqdm
 from utils.gym_utils import get_observation_shape
 
 class QLearning:
+    """
+        Q-Learning is an off-policy method that seeks to find the optimal action-selection 
+        policy for any given finite Markov Decision Process (MDP).
+    """
     def __init__(self, env: gym.Env, gamma=1.0, epsilon=0.1, alpha=0.1, initial_policy=None) -> None:
         self.env = env
         self.gamma = gamma  # Discounting rate
