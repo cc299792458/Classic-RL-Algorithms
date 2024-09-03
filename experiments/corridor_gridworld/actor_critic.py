@@ -9,8 +9,8 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 from utils.misc_utils import set_seed
 from envs.grid_world import CorridorGridWorld
-from traditional_algos.actor_critic import ActorCritic
-from traditional_algos.reinforce import LinearApproximator, ValueEstimation
+from traditional_algos.policy_gradient.actor_critic import ActorCritic
+from traditional_algos.policy_gradient.reinforce import LinearApproximator, ValueEstimation
 
 class ActorCriticLogging(ActorCritic):
     def train(self, num_episodes):

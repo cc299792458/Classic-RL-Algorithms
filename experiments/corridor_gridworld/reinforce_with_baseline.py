@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm
 from utils.misc_utils import set_seed
 from envs.grid_world import CorridorGridWorld
-from traditional_algos.reinforce import REINFORCEWithBaseline, LinearApproximator, ValueEstimation
+from traditional_algos.policy_gradient.reinforce import REINFORCEWithBaseline, LinearApproximator, ValueEstimation
 
 class REINFORCEWithBaselineLogging(REINFORCEWithBaseline):
     def train(self, num_episodes):

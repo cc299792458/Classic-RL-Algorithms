@@ -6,7 +6,7 @@ import numpy as np
 import gymnasium as gym
 
 from tqdm import tqdm
-from ..monte_carlo.monte_carlo import MonteCarlo
+from traditional_algos.monte_carlo import MonteCarlo
 
 class FunctionApproximator:
     """Base class for all function approximators."""
