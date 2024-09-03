@@ -16,10 +16,16 @@ You are welcome to provide suggestions or raise an issue if you have any questio
   - [Policy Iteration](https://github.com/cc299792458/Classic-RL-Algorithms/tree/main/traditional_algos/dynamic_programming/policy_iteration) 
   - [Value Iteration](https://github.com/cc299792458/Classic-RL-Algorithms/tree/main/traditional_algos/dynamic_programming/value_iteration)
 - [Monte Carlo Methods](https://github.com/cc299792458/Classic-RL-Algorithms/tree/main/traditional_algos/monte_carlo) 
-  - [Monte Carlo](https://github.com/cc299792458/Classic-RL-Algorithms/blob/main/traditional_algos/monte_carlo/monte_carlo.py), [Gradient Monte Carlo](https://github.com/cc299792458/Classic-RL-Algorithms/blob/main/traditional_algos/monte_carlo/gradient_monte_carlo.py)
+  - [Monte Carlo](https://github.com/cc299792458/Classic-RL-Algorithms/blob/main/traditional_algos/monte_carlo/monte_carlo.py)
 - [Temporal Difference Learning](https://github.com/cc299792458/Classic-RL-Algorithms/tree/main/traditional_algos/td_learning) 
   - [Sarsa](https://github.com/cc299792458/Classic-RL-Algorithms/tree/main/traditional_algos/td_learning/sarsa): [Sarsa](https://github.com/cc299792458/Classic-RL-Algorithms/blob/main/traditional_algos/td_learning/sarsa/sarsa.py), [Expected-Sarsa](https://github.com/cc299792458/Classic-RL-Algorithms/blob/main/traditional_algos/td_learning/sarsa/sarsa.py), [N-Step SARSA](https://github.com/cc299792458/Classic-RL-Algorithms/blob/main/traditional_algos/td_learning/sarsa/sarsa.py), [Sarsa Lambda](https://github.com/cc299792458/Classic-RL-Algorithms/blob/main/traditional_algos/td_learning/sarsa/sarsa_lambda.py)
-  - [Q-Learning](https://github.com/cc299792458/Classic-RL-Algorithms/tree/main/traditional_algos/td_learning/q_learning): [Q-Learning](https://github.com/cc299792458/Classic-RL-Algorithms/blob/main/traditional_algos/td_learning/q_learning/q_learning.py), [Double Q-Learning](https://github.com/cc299792458/Classic-RL-Algorithms/blob/main/traditional_algos/td_learning/q_learning/double_q_learning.py), [Semi-Gradient Q-Learning](https://github.com/cc299792458/Classic-RL-Algorithms/blob/main/traditional_algos/td_learning/q_learning/semi_gradient_q_learning.py)
+  - [Q-Learning](https://github.com/cc299792458/Classic-RL-Algorithms/tree/main/traditional_algos/td_learning/q_learning): [Q-Learning](https://github.com/cc299792458/Classic-RL-Algorithms/blob/main/traditional_algos/td_learning/q_learning/q_learning.py), [Double Q-Learning](https://github.com/cc299792458/Classic-RL-Algorithms/blob/main/traditional_algos/td_learning/q_learning/double_q_learning.py)
+- Gradient-Based Value Methods
+  - [Gradient Monte Carlo](https://github.com/cc299792458/Classic-RL-Algorithms/blob/main/traditional_algos/monte_carlo/gradient_monte_carlo.py)
+  - [Semi-Gradient Q-Learning](https://github.com/cc299792458/Classic-RL-Algorithms/blob/main/traditional_algos/td_learning/q_learning/semi_gradient_q_learning.py)
 - Policy Gradient Methods:
   - REINFORCE, REINFORCE with Baseline 
   - Actor-Critic
+- Planning and Learning Methods
+  - Dyna-Q, Dyna-Q+
+    
