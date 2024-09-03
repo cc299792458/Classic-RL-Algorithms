@@ -37,4 +37,4 @@ if __name__ == '__main__':
     start_time = time.time()
     agent.iterate()
     end_time = time.time()
-    print(f"Time consuming: {end_time-start_time}") # about 0.0348 seconds
+    print(f"Time consuming: {end_time-start_time}") # about 3.5e-2 seconds

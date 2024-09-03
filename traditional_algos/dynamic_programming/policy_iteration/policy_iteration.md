@@ -1,0 +1,1 @@
+**Policy Iteration** performs a complete evaluation of the policy at each step and then directly applies the **Policy Improvement Theorem** to improve the policy. It guarantees convergence to the optimal policy.
