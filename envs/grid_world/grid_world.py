@@ -12,15 +12,29 @@ class GridWorld(gym.Env):
         Each step incurs a reward of -1, encouraging the agent to reach the goal in as few steps as possible.
         The environment is deterministic, and episodes terminate when the agent reaches the goal or when a maximum number of steps is exceeded.
     """
-    def __init__(self, height=4, width=4, start_position=(0, 0), goal_position=None, max_episode_length=True):
+    def __init__(self, height=4, width=4, start_position=None, goal_position=None, max_episode_length=True):
         """Initialize the GridWorld environment."""
         self.height = height
         self.width = width
-        
-        # Convert start and goal positions from (x, y) to state indices
-        self.start_state = self._xy_to_state(start_position)
-        self.goal_state = self._xy_to_state(goal_position if goal_position is not None else (self.height - 1, self.width - 1))
-        
+
+        # Handle multiple goal positions
+        if goal_position is None:
+            self.goal_state = [self._xy_to_state((self.height - 1, self.width - 1))]
+        elif isinstance(goal_position, list):
+            self.goal_state = [self._xy_to_state(pos) for pos in goal_position]
+        else:
+            self.goal_state = [self._xy_to_state(goal_position)]
+
+         # Ensure the start position is not one of the goal positions
+        assert start_position is None or self._xy_to_state(start_position) not in self.goal_state, \
+            "Start position must not be a goal position"
+
+        # Handle random start position
+        if start_position is None:
+            self.start_state = self._random_start_state()
+        else:
+            self.start_state = self._xy_to_state(start_position)
+
         # Define action space: up, down, right, left
         self.action_space = spaces.Discrete(4)
         
@@ -42,6 +56,12 @@ class GridWorld(gym.Env):
 
         # Initial state
         self.reset()
+
+    def _random_start_state(self):
+        """Generate a random start state that is not a terminal state."""
+        all_states = set(range(self.width * self.height))
+        possible_states = list(all_states - set(self.goal_state))
+        return np.random.choice(possible_states)
 
     def _xy_to_state(self, position):
         """Convert (x, y) coordinates to a linear state index."""
@@ -84,13 +104,16 @@ class GridWorld(gym.Env):
         return P
     
     def is_terminal_state(self, state):
-        return state == self.goal_state
+        """Check if the current state is one of the goal states."""
+        return state in self.goal_state
 
     def reset(self):
         """
         Reset the grid to the initial state
         """
         self.position = self.start_state
+        while self.position in self.goal_state:  # Ensure start state is not a terminal state
+            self.position = self._random_start_state()  # Reassign until it's not a terminal state
         self.current_step = 0
         return self.position, {}
 
@@ -116,8 +139,9 @@ class GridWorld(gym.Env):
         grid[start_x, start_y] = 'S'
 
         # Mark the goal position with 'G'
-        goal_x, goal_y = self._state_to_xy(self.goal_state)
-        grid[goal_x, goal_y] = 'G'
+        for goal in self.goal_state:
+            goal_x, goal_y = self._state_to_xy(goal)
+            grid[goal_x, goal_y] = 'G'
 
         # Mark the current position with 'A'
         x, y = self._state_to_xy(self.position)
@@ -176,8 +200,8 @@ class GridWorld(gym.Env):
                 print("-" * (6 * self.width - 1))
 
 if __name__ == '__main__':
-    # Example of using the GridWorld environment with custom start and goal positions
-    env = GridWorld(width=9, height=6, start_position=(0, 0), goal_position=None)  # Start at top-left, goal at bottom-right
+    # Example of using the GridWorld environment with a random start position and multiple goal positions
+    env = GridWorld(width=9, height=6, start_position=None, goal_position=[(5, 8), (0, 8)])  # Start at random position, goal at bottom-right or top-right
     env.reset()
     env.render()
     state, reward, terminated, truncated, info = env.step(2)  # Example action: move right

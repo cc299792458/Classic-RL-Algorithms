@@ -1,2 +1,2 @@
 from .monte_carlo import MonteCarlo 
-from .gradient_monte_carlo import GradientMonteCarlo, FunctionApproximator
+from ..gradient_based_value_methods.gradient_monte_carlo import GradientMonteCarlo, FunctionApproximator

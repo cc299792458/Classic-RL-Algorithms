@@ -1,7 +1,7 @@
 import numpy as np
 import gymnasium as gym
 
-from .q_learning import QLearning
+from ..td_learning.q_learning.q_learning import QLearning
 
 class SemiGradientQLearning(QLearning):
     def __init__(self, env: gym.Env, gamma=1.0, epsilon=0.1, alpha=0.1, feature_dim=8, feature_function=None):

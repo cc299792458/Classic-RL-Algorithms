@@ -12,7 +12,7 @@ from traditional_algos.dynamic_programming.value_iteration.value_iteration impor
 if __name__ == '__main__':
     set_seed()
     ##### Step 0: Build Environment and Initiate Policy #####
-    env = GridWorld(height=4, width=4)
+    env = GridWorld(height=4, width=4, start_position=(0, 0), )
 
     theta = 1e-4
     agent = ValueIteration(env=env, theta=theta)

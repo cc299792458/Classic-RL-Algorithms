@@ -1,5 +1,5 @@
-To determine a policy without model, we need q functions rather than v functions.
+**Monte Carlo Methods** use sampling to estimate value functions and determine policies when the environment's transition model is not available.
 
-To estimate the action values, one key thing we need to consider is maintaining exploration. Otherwise, some action-state pairs will be never visited.
+It's important to note that, without the transition model, we must estimate the Q-functions directly instead of the V-functions. This consideration also applies when discussing TD-learning methods.
 
-Without epsilon-greedy, the policy can find the optimal policy but can't thoroughly explore all the actions, so sometimes it can't hanlde multi-optimal actions' situation.
+To accurately estimate action values, it's crucial to maintain exploration; otherwise, some state-action pairs may never be visited.

@@ -1,3 +1,3 @@
 from .q_learning import QLearning
 from .double_q_learning import DoubleQLearning
-from .semi_gradient_q_learning import SemiGradientQLearning
+from ...gradient_based_value_methods.semi_gradient_q_learning import SemiGradientQLearning

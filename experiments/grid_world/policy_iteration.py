@@ -12,7 +12,7 @@ from traditional_algos.dynamic_programming.policy_iteration.policy_iteration imp
 if __name__ == '__main__':
     set_seed()
     ##### Step 0: Build environment and initiate policy #####
-    env = GridWorld(height=4, width=4, max_episode_length=False)
+    env = GridWorld(height=4, width=4, start_position=(0, 0), max_episode_length=False)
 
     theta = 1e-4
     agent = PolicyIteration(env=env, theta=theta)
