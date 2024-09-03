@@ -1,8 +1,18 @@
+"""
+    MaximizataionBais Env
+"""
+
 import numpy as np
 import gymnasium as gym
 from gymnasium import spaces
 
 class MaximizationBias(gym.Env):
+    """
+        This environment is designed to study the effect of maximization bias in reinforcement learning. 
+        The environment has two non-terminal states (A and B) and one terminal state. The agent can choose 
+        between two actions in state A (left or right) and multiple actions in state B. The goal is to observe 
+        the reward distribution when transitioning from state A to state B.
+    """
     def __init__(self, num_action_at_state_B=10):
         super(MaximizationBias, self).__init__()
         

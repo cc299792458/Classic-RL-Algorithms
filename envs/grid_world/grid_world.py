@@ -127,6 +127,53 @@ class GridWorld(gym.Env):
         for row in grid:
             print(' '.join(row))
 
+    def _print_value_function(self, value_function):
+        """
+        Print the value function as a grid. 
+        Each cell shows the value for the corresponding state.
+        """
+        for x in range(self.height):
+            row_values = []
+            for y in range(self.width):
+                state = self._xy_to_state((x, y))
+                row_values.append(f"{value_function[state]:.2f}")
+            print(" | ".join(row_values))
+            if x < self.height - 1:
+                print("-" * (6 * self.width - 1))
+
+    def _print_q_function(self, q_function):
+        """
+        Print the Q-function as a grid. 
+        Each cell shows the Q-values for all actions in the corresponding state.
+        """
+        action_arrows = {0: '↑', 1: '↓', 2: '→', 3: '←'}
+        for x in range(self.height):
+            for a in range(4):  # For each action
+                row_values = []
+                for y in range(self.width):
+                    state = self._xy_to_state((x, y))
+                    value = q_function[state][a]
+                    row_values.append(f"{action_arrows[a]}:{value:.2f}")
+                print(" | ".join(row_values))
+            if x < self.height - 1:
+                print("-" * (8 * self.width - 1))
+
+    def _print_policy(self, policy):
+        """
+        Print the policy as a grid.
+        Each cell shows the best action(s) for the corresponding state.
+        """
+        action_arrows = {0: '↑', 1: '↓', 2: '→', 3: '←'}
+        for x in range(self.height):
+            row_policy = []
+            for y in range(self.width):
+                state = self._xy_to_state((x, y))
+                best_actions = np.argwhere(policy[state] == np.max(policy[state])).flatten()
+                arrows = ''.join([action_arrows[a] for a in best_actions])
+                row_policy.append(arrows.center(4))
+            print(" | ".join(row_policy))
+            if x < self.height - 1:
+                print("-" * (6 * self.width - 1))
 
 if __name__ == '__main__':
     # Example of using the GridWorld environment with custom start and goal positions

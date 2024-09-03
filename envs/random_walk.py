@@ -2,11 +2,16 @@
     Random Walk Env, for the RL Book Example 9.1.
 """
 
-import numpy as np
 import gymnasium as gym
 from gymnasium import spaces
 
 class RandomWalk(gym.Env):
+    """
+        This environment simulates a random walk on a 1D line with a specified number
+        of states. The agent starts in the middle and moves left or right by a random
+        amount, determined by the action. The episode ends when the agent reaches
+        either end of the line, receiving a reward of -1 or 1 depending on the side.
+    """
     def __init__(self, n_states=1000, n_neighbors=100):
         super(RandomWalk, self).__init__()
         self.n_states = n_states

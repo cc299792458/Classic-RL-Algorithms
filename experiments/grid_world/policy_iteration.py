@@ -12,17 +12,17 @@ from traditional_algos.dynamic_programming.policy_iteration.policy_iteration imp
 if __name__ == '__main__':
     set_seed()
     ##### Step 0: Build environment and initiate policy #####
-    env = GridWorld(width=4, height=4, max_episode_length=False)
+    env = GridWorld(height=4, width=4, max_episode_length=False)
 
     theta = 1e-4
     agent = PolicyIteration(env=env, theta=theta)
 
     ##### Step 1: Try policy evaluation with a random policy #####
-    ### Step 1.1: Update value function inplacely ---> 114 iterations
+    ### Step 1.1: Update value function inplacely ---> 312 iterations
     inplace = True
     agent.policy_evaluation(inplace=inplace, print_each_iter=True)
     
-    ### Step 1.2: Update value function non-inplacely ---> 173 iterations
+    ### Step 1.2: Update value function non-inplacely ---> 471 iterations
     agent.reset()
     inplace = False
     agent.policy_evaluation(inplace=inplace, print_each_iter=True)
@@ -37,4 +37,4 @@ if __name__ == '__main__':
     start_time = time.time()
     agent.iterate()
     end_time = time.time()
-    print(f"Time consuming: {end_time-start_time}") # about 9e-3 seconds
+    print(f"Time consuming: {end_time-start_time}") # about 0.0348 seconds

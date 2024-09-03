@@ -9,6 +9,12 @@ import gymnasium as gym
 from gymnasium import spaces
 
 class KArmedBandit(gym.Env):
+    """
+        Simulates a multi-armed bandit problem where each arm (action) has a different
+        reward distribution. The agent needs to choose actions over time to maximize 
+        the cumulative reward. This implementation supports both stationary and 
+        non-stationary reward distributions.
+    """
     def __init__(self, k=10, max_time_steps=1000):
         super(KArmedBandit, self).__init__()
         
@@ -53,6 +59,10 @@ class KArmedBandit(gym.Env):
         return np.flatnonzero(self.reward_means == np.max(self.reward_means))
     
 class NonStationaryBandit(KArmedBandit):
+    """
+        Extends the stationary bandit by allowing the reward means to change over time 
+        according to a random walk process.
+    """
     def __init__(self, k=10, max_time_steps=1000, walk_std=0.01):
         super().__init__(k=k, max_time_steps=max_time_steps)
         self.walk_std = walk_std

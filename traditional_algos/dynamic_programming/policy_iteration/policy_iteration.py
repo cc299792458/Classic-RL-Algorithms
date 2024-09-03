@@ -5,19 +5,26 @@
 import numpy as np
 import gymnasium as gym
 
+from utils.gym_utils import get_observation_shape
+
 class PolicyIteration:
+    """
+        Policy Iteration Algorithm for solving Markov Decision Processes (MDPs).
+        This implementation performs policy iteration, which alternates between 
+        policy evaluation and policy improvement until the optimal policy is found.
+    """
     def __init__(self, env: gym.Env, gamma=1.0, theta=1e-6) -> None:
         self.env = env
         self.gamma = gamma
         self.theta = theta  # Convergence threshold
-        self.num_state = self.env.observation_space.n
+        self.observation_shape = get_observation_shape(self.env.observation_space)
 
         self.reset()
 
     def reset(self):
-        """Reset the policy to a uniform random policy and reset the value function."""
-        self.policy = np.ones([self.num_state, self.env.action_space.n]) / self.env.action_space.n
-        self.value_function = np.zeros(self.num_state)
+        """Reset reset the value function and the policy to a uniform random policy."""
+        self.value_function = np.zeros(self.observation_shape)
+        self.policy = np.ones([*self.observation_shape, self.env.action_space.n]) / self.env.action_space.n
 
     def policy_evaluation(self, inplace=True, print_each_iter=False, print_result=False):
         iteration = 0
@@ -29,14 +36,14 @@ class PolicyIteration:
             if not inplace:
                 new_value_function = self.value_function.copy()  # Use copy to avoid modifying the original directly
             
-            for state in range(self.num_state):
-                if self.env.is_terminal_state(state):
+            for state in np.ndindex(self.observation_shape):
+                if self.env.is_terminal_state(state[0]):
                     continue  # Skip terminal states
                 
                 v = 0
                 # Calculate the expected value for the current state under the policy
                 for action, action_prob in enumerate(self.policy[state]):
-                    for prob, next_state, reward, terminated, truncated in self.env.P[state][action]:
+                    for prob, next_state, reward, terminated in self.env.P[state[0]][action]:
                         v += action_prob * prob * (reward + self.gamma * self.value_function[next_state])
                 
                 delta = max(delta, np.abs(v - self.value_function[state]))
@@ -64,13 +71,13 @@ class PolicyIteration:
         policy_stable = True
         tolerance = 1e-8  # Define a small tolerance for floating-point comparisons
 
-        for state in range(self.num_state):
-            if self.env.is_terminal_state(state):
+        for state in np.ndindex(self.observation_shape):
+            if self.env.is_terminal_state(state[0]):
                 continue  # Skip terminal states
 
             q = np.zeros(self.env.action_space.n)
             for action in range(self.env.action_space.n):
-                for prob, next_state, reward, terminated, truncated in self.env.P[state][action]:
+                for prob, next_state, reward, terminated in self.env.P[state[0]][action]:
                     q[action] += prob * (reward + self.gamma * self.value_function[next_state])
                     
             max_q_value = np.max(q)
