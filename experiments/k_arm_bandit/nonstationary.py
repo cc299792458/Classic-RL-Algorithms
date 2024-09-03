@@ -17,7 +17,7 @@ if __name__ == '__main__':
     set_seed()
     log_dir = os.path.dirname(os.path.abspath(__file__))  # Directory of the current script
     ##### 0. Load environment, policy and initialize parameters #####
-    max_time_steps = 20000
+    max_time_steps = 20_000
     env = NonStationaryBandit(k=10, max_time_steps=max_time_steps, walk_std=0.01)
     sample_avg_policy = EpsilonGreedy(env=env)
     const_step_policy = EpsilonGreedy(env=env, step_size=0.1)
@@ -35,6 +35,7 @@ if __name__ == '__main__':
         rewards = []
         optimal_action_selections = []
         
+        # Sample-average policy
         done = False
         while not done:
             action = sample_avg_policy.select_action()
@@ -57,6 +58,7 @@ if __name__ == '__main__':
         rewards = []
         optimal_action_selections = []
         
+        # Constant-stepsize policy
         done = False
         while not done:
             action = const_step_policy.select_action()

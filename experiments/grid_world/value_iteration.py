@@ -1,5 +1,6 @@
 """
-    Use Value Iteration to Solve a 4 x 4 GridWorld
+    Use Value Iteration to solve a 4 x 4 GridWorld
+    This is the example of the RL Book, chapter 4
 """
 
 import time

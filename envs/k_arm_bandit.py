@@ -1,7 +1,7 @@
 """
-    K Arm Bandit solved by Epsilon Greedy
+    K Arm Bandit Problem, both Stationary and Non-stationary Versions.
 
-    This example comes from the RL Book, chapter 2
+    This examples come from the RL Book, chapter 2
 """
 
 import numpy as np

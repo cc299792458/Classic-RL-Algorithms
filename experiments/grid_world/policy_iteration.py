@@ -1,5 +1,6 @@
 """
-    Use Policy Iteration to Solve a 4 x 4 GridWorld
+    Use Policy Iteration to solve a 4 x 4 GridWorld
+    This is the example of the RL Book, chapter 4
 """
 
 import time
@@ -11,7 +12,7 @@ from traditional_algos.dynamic_programming.policy_iteration.policy_iteration imp
 if __name__ == '__main__':
     set_seed()
     ##### Step 0: Build environment and initiate policy #####
-    env = GridWorld()
+    env = GridWorld(width=4, height=4, max_episode_length=False)
 
     theta = 1e-4
     agent = PolicyIteration(env=env, theta=theta)

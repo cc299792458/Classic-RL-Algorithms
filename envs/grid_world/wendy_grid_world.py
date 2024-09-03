@@ -207,3 +207,4 @@ if __name__ == '__main__':
 
     # Animate the trajectory
     animate_trajectory(env, trajectory, grid_size=(env.height, env.width), goal_state=env.goal_state)
+    
