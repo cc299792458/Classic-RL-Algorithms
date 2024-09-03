@@ -1,15 +1,21 @@
+"""
+    Basic GridWorld.
+"""
 import numpy as np
 import gymnasium as gym
 from gymnasium import spaces
 
 class GridWorld(gym.Env):
-    def __init__(self, width=4, height=4, start_position=(0, 0), goal_position=None, max_episode_length=True):
-        self.width = width
+    def __init__(self, height=4, width=4, start_position=(0, 0), goal_position=None, max_episode_length=True):
+        """
+            Initialize the GridWorld environment.
+        """
         self.height = height
+        self.width = width
         
         # Convert start and goal positions from (x, y) to state indices
         self.start_state = self._xy_to_state(start_position)
-        self.goal_state = self._xy_to_state(goal_position if goal_position is not None else (self.width - 1, self.height - 1))
+        self.goal_state = self._xy_to_state(goal_position if goal_position is not None else (self.height - 1, self.width - 1))
         
         # Define action space: up, down, right, left
         self.action_space = spaces.Discrete(4)
@@ -120,7 +126,7 @@ class GridWorld(gym.Env):
 
 if __name__ == '__main__':
     # Example of using the GridWorld environment with custom start and goal positions
-    env = GridWorld(start_position=(0, 0), goal_position=(3, 3))  # Start at top-left, goal at bottom-right
+    env = GridWorld(width=9, height=6, start_position=(0, 0), goal_position=None)  # Start at top-left, goal at bottom-right
     env.reset()
     env.render()
     state, reward, terminated, truncated, info = env.step(2)  # Example action: move right

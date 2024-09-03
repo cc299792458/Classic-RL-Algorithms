@@ -1,58 +1,96 @@
-import numpy as np
-import gymnasium as gym
+"""
+    Dyna Maze
 
-from .grid_world import GridWorld
+    This comes from the Example 8.1 of the RL Book.
+"""
+
+import numpy as np
+
+from envs.grid_world import GridWorld
 
 class DynaMaze(GridWorld):
-    def __init__(self, width=9, height=6, walls=None, max_episode_length=False):
-        super().__init__(width, height, max_episode_length)
-        
-        # Set walls if provided, otherwise default to an empty list
+    def __init__(self, height=6, width=9, walls=None, max_episode_length=False, start_position=(0, 0), goal_position=None):
+        """
+             Initialize the DynaMaze environment.
+        """
         self.walls = walls if walls is not None else []
-        
-        # Rebuild the transition matrix with walls
-        self.P = self._create_transition_matrix()
+
+        super().__init__(height=height, 
+                         width=width, 
+                         max_episode_length=max_episode_length, 
+                         start_position=start_position, 
+                         goal_position=goal_position)
 
     def _create_transition_matrix(self):
         """
         Create the transition matrix P[state][action] -> [(probability, next_state, reward, terminated)]
-        considering the walls.
+        without considering the walls, i.e., no transitions from wall states.
         """
         P = {}
         for x in range(self.height):
             for y in range(self.width):
                 state = x * self.width + y
-                P[state] = {a: [] for a in range(self.action_space.n)}
-                
                 if (x, y) in self.walls:
-                    # If the current position is a wall, the agent cannot enter it
-                    for action in range(self.action_space.n):
-                        P[state][action].append((1.0, state, -1, False))
-                else:
-                    # Define possible transitions for each action
-                    for action in range(self.action_space.n):
-                        new_x, new_y = x, y
-                        if action == 0:  # up
-                            new_x = max(x - 1, 0)
-                        elif action == 1:  # down
-                            new_x = min(x + 1, self.height - 1)
-                        elif action == 2:  # right
-                            new_y = min(y + 1, self.width - 1)
-                        elif action == 3:  # left
-                            new_y = max(y - 1, 0)
+                    continue  # Skip creating transitions for wall positions
+                
+                P[state] = {a: [] for a in range(self.action_space.n)}
 
-                        # Check if the next position is a wall
-                        if (new_x, new_y) in self.walls:
-                            new_x, new_y = x, y  # Stay in the same position
+                # Define possible transitions for each action
+                for action in range(self.action_space.n):
+                    new_x, new_y = x, y
+                    if action == 0:  # up
+                        new_x = max(x - 1, 0)
+                    elif action == 1:  # down
+                        new_x = min(x + 1, self.height - 1)
+                    elif action == 2:  # right
+                        new_y = min(y + 1, self.width - 1)
+                    elif action == 3:  # left
+                        new_y = max(y - 1, 0)
 
+                    # Check if the next position is a wall
+                    if (new_x, new_y) in self.walls:
+                        next_state = state  # Stay in the same position if hitting a wall
+                    else:
                         next_state = new_x * self.width + new_y
-                        terminated = self.is_terminal_state(next_state)
-                        reward = -1  # Constant reward for each step
 
-                        # Add this transition to the P dictionary
-                        P[state][action].append((1.0, next_state, reward, terminated))
+                    terminated = self.is_terminal_state(next_state)
+                    reward = -1  # Constant reward for each step
+
+                    # Add this transition to the P dictionary
+                    P[state][action].append((1.0, next_state, reward, terminated))
                     
         return P
+
+    def render(self):
+        """
+        Render the maze with the following symbols:
+        S: Start position
+        G: Goal position
+        W: Wall
+        A: Agent's current position
+        .: Empty space
+        """
+        grid = np.full((self.height, self.width), '.', dtype=str)
+
+        # Mark walls with 'W'
+        for (x, y) in self.walls:
+            grid[x, y] = 'W'
+
+        # Mark the start position with 'S'
+        start_x, start_y = self._state_to_xy(self.start_state)
+        grid[start_x, start_y] = 'S'
+
+        # Mark the goal position with 'G'
+        goal_x, goal_y = self._state_to_xy(self.goal_state)
+        grid[goal_x, goal_y] = 'G'
+
+        # Mark the current position with 'A'
+        x, y = self._state_to_xy(self.position)
+        grid[x, y] = 'A'
+
+        # Print the grid
+        for row in grid:
+            print(' '.join(row))
 
     def set_walls(self, walls):
         """
@@ -63,7 +101,7 @@ class DynaMaze(GridWorld):
 
 if __name__ == '__main__':
     # Example of using the DynaMaze environment
-    walls = [(1, 2), (2, 2), (3, 2), (4, 2), (5, 2), (6, 2)]  # Example wall positions
+    walls = [(0, 7), (1, 2), (1, 7), (2, 2), (2, 7), (3, 2), (4, 5)]  # Example wall positions
     env = DynaMaze(walls=walls)
     env.reset()
     env.render()
