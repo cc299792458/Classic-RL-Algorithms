@@ -5,7 +5,7 @@
 """
 
 from gymnasium import spaces
-from .grid_world import GridWorld  # Assuming your base GridWorld class is in grid_world.py
+from .grid_world import GridWorld
 
 class CorridorGridWorld(GridWorld):
     def __init__(self):

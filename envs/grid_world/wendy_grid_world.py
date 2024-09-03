@@ -1,24 +1,23 @@
 """
-    Wendy GridWorld, Windy GridWorld Kings Moves, and Wendy GridWorld Stochastic
+    Windy GridWorld, Windy GridWorld Kings Moves, and Windy GridWorld Stochastic
 """
 
 import numpy as np
 import gymnasium as gym
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
-
 from envs.grid_world import GridWorld
 
 class WindyGridWorld(GridWorld):
-    def __init__(self, width=10, height=7, max_episode_length=True, wind_strength=None):
-        super().__init__(width=width, height=height, max_episode_length=max_episode_length)
+    def __init__(self, height=7, width=10, max_episode_length=True, wind_strength=None):
+        super().__init__(height=height, width=width, max_episode_length=max_episode_length)
 
         if wind_strength is None:
             self.wind_strength = [0, 0, 0, 1, 1, 1, 2, 2, 1, 0]
         else:
             self.wind_strength = wind_strength
 
-        self.goal_state = (3, 7)
+        self.goal_state = self._xy_to_state((3, 7))
 
     def _calculate_next_state(self, action):
         x, y = divmod(self.position, self.width)
@@ -45,7 +44,7 @@ class WindyGridWorld(GridWorld):
     def step(self, action):
         self.current_step += 1
         new_x, new_y = self._calculate_next_state(action)
-        self.position = new_x * self.width + new_y
+        self.position = self._xy_to_state((new_x, new_y))
 
         terminated = self.is_goal_state(new_x, new_y)
         reward = -1
@@ -59,16 +58,16 @@ class WindyGridWorld(GridWorld):
         return self.position, reward, terminated, truncated, info
 
     def is_goal_state(self, x, y):
-        return (x, y) == self.goal_state
+        return self._xy_to_state((x, y)) == self.goal_state
 
     def reset(self):
-        self.position = 3 * self.width
+        self.position = self._xy_to_state((3, 0))  # Start position set at row 3, column 0
         self.current_step = 0
         return self.position, {}
 
 class WindyGridWorldKingsMoves(WindyGridWorld):
-    def __init__(self, width=10, height=7, max_episode_length=True, wind_strength=None):
-        super().__init__(width=width, height=height, max_episode_length=max_episode_length, wind_strength=wind_strength)
+    def __init__(self, height=7, width=10, max_episode_length=True, wind_strength=None):
+        super().__init__(height=height, width=width, max_episode_length=max_episode_length, wind_strength=wind_strength)
         self.action_space = gym.spaces.Discrete(8)  # Allow for diagonal moves
 
     def _calculate_next_state(self, action):
@@ -102,8 +101,8 @@ class WindyGridWorldKingsMoves(WindyGridWorld):
         return new_x, new_y
 
 class WindyGridWorldStochastic(WindyGridWorldKingsMoves):
-    def __init__(self, width=10, height=7, max_episode_length=True, wind_strength=None, wind_probabilities=None):
-        super().__init__(width=width, height=height, max_episode_length=max_episode_length, wind_strength=wind_strength)
+    def __init__(self, height=7, width=10, max_episode_length=True, wind_strength=None, wind_probabilities=None):
+        super().__init__(height=height, width=width, max_episode_length=max_episode_length, wind_strength=wind_strength)
         # Define the probabilities for wind change: [probability of decrease, no change, increase]
         if wind_probabilities is None:
             self.wind_probabilities = [1/3, 1/3, 1/3]
@@ -155,7 +154,8 @@ def animate_trajectory(env, trajectory, grid_size, goal_state, hold_frames=10):
     ax.set_aspect('equal', adjustable='box')
 
     # Plot goal
-    ax.scatter(goal_state[1], goal_state[0], color='r', marker='*', s=200, label='Goal')
+    goal_x, goal_y = divmod(goal_state, env.width)
+    ax.scatter(goal_y, goal_x, color='r', marker='*', s=200, label='Goal')
 
     # Initialize plot elements
     line, = ax.plot([], [], 'k--', lw=2)  # Path as a dashed line
@@ -163,8 +163,7 @@ def animate_trajectory(env, trajectory, grid_size, goal_state, hold_frames=10):
 
     # Check if the last state is the terminal state and add it if missing
     if not env.is_goal_state(*divmod(trajectory[-1][0], env.width)):
-        final_state = env.goal_state[0] * env.width + env.goal_state[1]
-        trajectory.append((final_state, None))
+        trajectory.append((goal_state, None))
 
     def init():
         line.set_data([], [])
@@ -207,4 +206,3 @@ if __name__ == '__main__':
 
     # Animate the trajectory
     animate_trajectory(env, trajectory, grid_size=(env.height, env.width), goal_state=env.goal_state)
-    

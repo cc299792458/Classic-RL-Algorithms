@@ -1,5 +1,5 @@
 """
-    Basic GridWorld.
+    GridWorld.
 """
 import numpy as np
 import gymnasium as gym
