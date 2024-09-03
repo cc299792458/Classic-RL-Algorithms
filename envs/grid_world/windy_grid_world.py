@@ -9,6 +9,10 @@ from matplotlib.animation import FuncAnimation
 from envs.grid_world import GridWorld
 
 class WindyGridWorld(GridWorld):
+    """
+        Based on the standard GridWorld, but with added wind effects that push the agent up or down in specific columns, 
+        making the path to the goal more challenging.
+    """
     def __init__(self, height=7, width=10, max_episode_length=True, wind_strength=None):
         super().__init__(height=height, width=width, max_episode_length=max_episode_length)
 
@@ -66,6 +70,10 @@ class WindyGridWorld(GridWorld):
         return self.position, {}
 
 class WindyGridWorldKingsMoves(WindyGridWorld):
+    """
+        A variant of WindyGridWorld that allows the agent to make "king's moves" 
+        (i.e., movement in all eight directions: up, down, left, right, and the four diagonal directions).
+    """
     def __init__(self, height=7, width=10, max_episode_length=True, wind_strength=None):
         super().__init__(height=height, width=width, max_episode_length=max_episode_length, wind_strength=wind_strength)
         self.action_space = gym.spaces.Discrete(8)  # Allow for diagonal moves
@@ -101,6 +109,10 @@ class WindyGridWorldKingsMoves(WindyGridWorld):
         return new_x, new_y
 
 class WindyGridWorldStochastic(WindyGridWorldKingsMoves):
+    """
+        An extension of WindyGridWorldKingsMoves, introducing stochastic wind effects. 
+        The wind may randomly increase, decrease, or remain the same in each step, adding uncertainty to the environment.
+    """
     def __init__(self, height=7, width=10, max_episode_length=True, wind_strength=None, wind_probabilities=None):
         super().__init__(height=height, width=width, max_episode_length=max_episode_length, wind_strength=wind_strength)
         # Define the probabilities for wind change: [probability of decrease, no change, increase]

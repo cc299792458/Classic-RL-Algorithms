@@ -8,10 +8,14 @@ from gymnasium import spaces
 from .grid_world import GridWorld
 
 class CorridorGridWorld(GridWorld):
+    """
+        A simple 1x4 corridor environment where the agent starts at the leftmost position (state 0)
+        and aims to reach the terminal state (state 3). The action space is stochastic, where in state 1,
+        the actions are reversed.
+    """
     def __init__(self):
-        super(CorridorGridWorld, self).__init__(width=4, height=1)  # Override the dimensions for the corridor
+        super(CorridorGridWorld, self).__init__(height=1, width=4, max_episode_length=False)
 
-        # Override the number of states to match the corridor gridworld setup
         self.n_states = 4  # States: 0 (start), 1, 2, 3 (terminal)
         self.n_actions = 2  # Actions: 0 (left), 1 (right)
 

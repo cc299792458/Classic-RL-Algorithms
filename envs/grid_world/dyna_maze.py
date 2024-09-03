@@ -9,6 +9,11 @@ import numpy as np
 from envs.grid_world import GridWorld
 
 class DynaMaze(GridWorld):
+    """
+        DynaMaze extends GridWorld by adding walls as obstacles, making certain cells inaccessible to the agent. 
+        The agent must find a path from the start position to the goal while navigating around these walls. 
+        The walls can be modified dynamically to simulate changing environments.
+    """
     def __init__(self, height=6, width=9, walls=None, max_episode_length=False, start_position=(0, 0), goal_position=None):
         """
              Initialize the DynaMaze environment.

@@ -6,10 +6,14 @@ import gymnasium as gym
 from gymnasium import spaces
 
 class GridWorld(gym.Env):
+    """
+        A simple grid-based environment where an agent navigates from a start position ('S') to a goal position ('G').
+        The grid is defined by a specified width and height, and the agent can move in four directions: up, down, left, and right.
+        Each step incurs a reward of -1, encouraging the agent to reach the goal in as few steps as possible.
+        The environment is deterministic, and episodes terminate when the agent reaches the goal or when a maximum number of steps is exceeded.
+    """
     def __init__(self, height=4, width=4, start_position=(0, 0), goal_position=None, max_episode_length=True):
-        """
-            Initialize the GridWorld environment.
-        """
+        """Initialize the GridWorld environment."""
         self.height = height
         self.width = width
         
