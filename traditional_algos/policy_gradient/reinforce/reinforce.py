@@ -43,6 +43,9 @@ class LinearApproximator(PolicyBase):
         return action, dlog_pi
 
 class REINFORCE:
+    """
+        REINFORCE based on the most simple linear approximator
+    """
     def __init__(self, env: gym.Env, gamma=1.0, alpha=5e-4, policy: PolicyBase = None) -> None:
         self.env = env
         self.gamma = gamma

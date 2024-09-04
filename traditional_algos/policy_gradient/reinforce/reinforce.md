@@ -1,0 +1,3 @@
+**REINFORCE** is a basic policy gradient algorithm used in reinforcement learning that directly optimizes the policy by adjusting its parameters in the direction of higher expected rewards. It uses the Monte Carlo method to estimate the gradient of the expected return with respect to the policy parameters. The agent collects trajectories of state-action-reward sequences and updates the policy based on the cumulative rewards following each action. Though simple, REINFORCE can suffer from high variance due to monte carlo method, which can be mitigated with techniques like baseline subtraction or variance reduction strategies.
+
+TODO: Add more complex function approximators, like the feature construction

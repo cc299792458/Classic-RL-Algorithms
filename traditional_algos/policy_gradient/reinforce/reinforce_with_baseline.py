@@ -2,7 +2,7 @@ import numpy as np
 
 from gymnasium import Env
 from .reinforce import REINFORCE
-from traditional_algos.reinforce.reinforce import PolicyBase
+from traditional_algos.policy_gradient.reinforce import PolicyBase
 
 class ValueEstimation:
     def __init__(self, initial_weights=None) -> None:
@@ -17,6 +17,9 @@ class ValueEstimation:
         return np.dot(self.w, state_vector)
 
 class REINFORCEWithBaseline(REINFORCE):
+    """
+        REINFORCE with Baseline based on the most simple linear approximator and value estimator
+    """
     def __init__(self, env: Env, gamma=1.0, alpha_policy=2e-3, alpha_baseline=5e-3, policy: PolicyBase = None, baseline: ValueEstimation = None) -> None:
         super().__init__(env, gamma, None, policy)
         self.baseline = baseline

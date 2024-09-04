@@ -5,7 +5,7 @@
 import numpy as np
 
 from gymnasium import Env
-from traditional_algos.reinforce import ValueEstimation, PolicyBase
+from traditional_algos.policy_gradient.reinforce import ValueEstimation, PolicyBase
 
 class ActorCritic:
     def __init__(self, env: Env, gamma=1.0, alpha_actor=5e-3, alpha_critic=1e-1, actor: PolicyBase = None, critic: ValueEstimation = None) -> None:
