@@ -1,0 +1,3 @@
+**Use REINFORCE with Baseline to solve Corridor Gridworld**
+
+Using a value network as a baseline helps reduce the variance in training without introducing bias. Therefore, compared to REINFORCE, a larger alpha can be used while still maintaining stable training, resulting in faster learning. Notably, experiments revealed that simply using a baseline without increasing alpha does not significantly speed up training.

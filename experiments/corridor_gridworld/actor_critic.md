@@ -1,0 +1,3 @@
+**Use Actor-Critic to solve Corridor Gridworld**
+
+Compared to REINFORCE, Actor-Critic uses TD learning for updates, which should lead to faster convergence. However, since it introduces bias, the parameters need to be tuned more carefully. To ensure stable policy training, it's preferable for the value network to converge faster, so generally, the value network's alpha can be set slightly higher than the policy network's. After tuning the parameters, it becomes clear that Actor-Critic converges faster than both REINFORCE and REINFORCE with Baseline.
