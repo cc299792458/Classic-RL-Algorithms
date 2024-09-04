@@ -27,5 +27,5 @@ You are welcome to provide suggestions or raise an issue if you have any questio
   - [REINFORCE](https://github.com/cc299792458/Classic-RL-Algorithms/tree/main/traditional_algos/policy_gradient/reinforce): [REINFORCE](https://github.com/cc299792458/Classic-RL-Algorithms/blob/main/traditional_algos/policy_gradient/reinforce/reinforce.py), [REINFORCE with Baseline](https://github.com/cc299792458/Classic-RL-Algorithms/blob/main/traditional_algos/policy_gradient/reinforce/reinforce_with_baseline.py) 
   - [Actor-Critic](https://github.com/cc299792458/Classic-RL-Algorithms/tree/main/traditional_algos/policy_gradient/actor_critic)
 - [Planning and Learning Methods](https://github.com/cc299792458/Classic-RL-Algorithms/tree/main/traditional_algos/planing_and_learning_methods)
-  - Dyna-Q, Dyna-Q+
+  - [Dyna-Q](https://github.com/cc299792458/Classic-RL-Algorithms/blob/main/traditional_algos/planing_and_learning_methods/dyna_q.py), [Dyna-Q+](https://github.com/cc299792458/Classic-RL-Algorithms/blob/main/traditional_algos/planing_and_learning_methods/dyna_q_plus.py)
     
