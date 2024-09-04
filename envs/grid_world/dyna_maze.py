@@ -86,8 +86,9 @@ class DynaMaze(GridWorld):
         grid[start_x, start_y] = 'S'
 
         # Mark the goal position with 'G'
-        goal_x, goal_y = self._state_to_xy(self.goal_state)
-        grid[goal_x, goal_y] = 'G'
+        for goal_state in self.goal_state:
+            goal_x, goal_y = self._state_to_xy(goal_state)
+            grid[goal_x, goal_y] = 'G'
 
         # Mark the current position with 'A'
         x, y = self._state_to_xy(self.position)

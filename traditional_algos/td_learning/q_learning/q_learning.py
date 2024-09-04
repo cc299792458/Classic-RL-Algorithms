@@ -1,5 +1,5 @@
 """
-    Sarsa
+    Q-Learning
 """
 
 import numpy as np

@@ -1,0 +1,3 @@
+**Use Dyna Q to solve Dyna Maze**
+
+It is evident that when using Dyna Q, increasing the number of planning steps improves the efficiency of utilizing the real data collected from the environment. On the other hand, we cannot ignore the computational cost. As observed, while setting planning_steps = 50 solves the problem in the fewest episodes, it also consumes a significant amount of computational resources. Therefore, it's essential to find a balance between the two factors. For example, in this problem, setting planning_steps = 20 can solve the problem almost as quickly as planning_steps = 50, while using only about half the resources.
