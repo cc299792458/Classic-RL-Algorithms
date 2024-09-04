@@ -4,7 +4,7 @@ Compared to the experiment in the book, I present a simplified version here (wit
 
 - First, an appropriate $\kappa$ value. Based on the experiment, it shouldn't be too large or too small, and it seems that $\kappa = 0.1$ is a suitable value here. 
 
-- Second, an appropriate epsilon-greedy strategy is needed; I set $\epsilon$ to 0.3 (and I have also tried $\epsilon$ = 0.1), which is a sufficiently large epsilon to ensure exploration.
+- Second, an appropriate epsilon-greedy strategy is needed. I set $\epsilon$ to 0.3 (and I have also tried $\epsilon$ = 0.1), which is a sufficiently large epsilon to ensure exploration.
 
 In addition to these conditions, sufficient time is still required to discover new optimal paths.
 
