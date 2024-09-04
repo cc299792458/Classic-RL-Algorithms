@@ -105,6 +105,57 @@ class DynaMaze(GridWorld):
         self.walls = walls
         self.P = self._create_transition_matrix()
 
+class DynamicMaze(DynaMaze):
+    def __init__(self, 
+                 height=6, 
+                 width=9, 
+                 original_walls=None,
+                 new_walls=None, 
+                 change_time_step=100,  # When to change the walls
+                 max_episode_length=False, 
+                 start_position=(0, 0), 
+                 goal_position=None):
+        """
+        Initialize the DynamicMaze environment.
+        
+        Parameters:
+        - original_walls: List of wall positions at the start.
+        - new_walls: List of wall positions after change_time_step.
+        - change_time_step: The time step at which the walls change.
+        """
+        super().__init__(height, width, walls=original_walls, 
+                         max_episode_length=max_episode_length, 
+                         start_position=start_position, 
+                         goal_position=goal_position)
+        
+        self.original_walls = original_walls if original_walls is not None else []
+        self.new_walls = new_walls if new_walls is not None else []
+        self.change_time_step = change_time_step
+        self.timestep = 0  # Track the current time step
+
+    def reset(self):
+        """
+        Reset the maze to its initial state.
+        """
+        self.timestep = 0  # Reset time step
+        super().reset()  # Call the parent reset method
+
+    def step(self, action):
+        """
+        Perform a step in the environment and change the walls if needed.
+        """
+        # Increment the timestep
+        self.timestep += 1
+
+        # If it's time to change the walls, update the maze with new walls
+        if self.timestep == self.change_time_step:
+            print(f"Changing walls at timestep {self.timestep}")
+            self.set_walls(self.new_walls)
+
+        # Call the parent class's step function
+        return super().step(action)
+
+
 if __name__ == '__main__':
     # Example of using the DynaMaze environment
     walls = [(0, 7), (1, 2), (1, 7), (2, 2), (2, 7), (3, 2), (4, 5)]  # Example wall positions
