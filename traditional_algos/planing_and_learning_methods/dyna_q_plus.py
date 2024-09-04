@@ -8,6 +8,8 @@ import gymnasium as gym
 from tqdm import tqdm
 from traditional_algos.planing_and_learning_methods import DynaQ
 
+# TODO: Why timesteps are different in the episode 0?
+
 class DynaQPlus(DynaQ):
     """
         DynaQ+ with an enhanced model, exploration bonus (only in simulations), and untried action consideration
@@ -48,7 +50,7 @@ class DynaQPlus(DynaQ):
                 continue
 
             # Randomly pick a state and action
-            state = np.random.choice(list(self.model.keys()))
+            state = self.env.choose_random_state()
             action = np.random.choice(np.arange(self.num_action))
 
             # Check if this (state, action) pair is in the model, if not initialize it

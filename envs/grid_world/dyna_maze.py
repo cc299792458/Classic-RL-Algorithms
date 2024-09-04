@@ -59,7 +59,7 @@ class DynaMaze(GridWorld):
                         next_state = new_x * self.width + new_y
 
                     terminated = self.is_terminal_state(next_state)
-                    reward = -1  # Constant reward for each step
+                    reward = 1 if terminated else 0
 
                     # Add this transition to the P dictionary
                     P[state][action].append((1.0, next_state, reward, terminated))
@@ -133,12 +133,14 @@ class DynamicMaze(DynaMaze):
         self.change_time_step = change_time_step
         self.timestep = 0  # Track the current time step
 
-    def reset(self):
+    def reset(self, reset_timestep=False):
         """
         Reset the maze to its initial state.
+        Optionally reset the timestep if reset_timestep is True.
         """
-        self.timestep = 0  # Reset time step
-        super().reset()  # Call the parent reset method
+        if reset_timestep:
+            self.timestep = 0  # Reset time step
+        return super().reset()  # Call the parent reset method
 
     def step(self, action):
         """
@@ -149,11 +151,27 @@ class DynamicMaze(DynaMaze):
 
         # If it's time to change the walls, update the maze with new walls
         if self.timestep == self.change_time_step:
-            print(f"Changing walls at timestep {self.timestep}")
+            # print(f"Changing walls at timestep {self.timestep}")
             self.set_walls(self.new_walls)
 
         # Call the parent class's step function
         return super().step(action)
+    
+    def choose_random_state(self):
+        """
+        Choose a random state from the environment's state space, excluding walls and goal state.
+        """
+        all_states = [(x, y) for x in range(self.height) for y in range(self.width) 
+                      if (x, y) not in self.walls and self._xy_to_state((x, y)) not in self.goal_state]
+
+        if not all_states:  # Ensure there are valid states to choose from
+            raise ValueError("No valid states to choose from.")
+
+        # Randomly choose a valid (x, y) position
+        x, y = all_states[np.random.randint(len(all_states))]
+
+        # Use _xy_to_state to convert (x, y) to a state value (integer)
+        return self._xy_to_state((x, y))
 
 
 if __name__ == '__main__':
