@@ -4,6 +4,9 @@ import gymnasium as gym
 from traditional_algos.td_learning.q_learning import QLearning
 
 class SemiGradientQLearning(QLearning):
+    """
+        Semi Gradient Q Learning with Linear Function Approximation.
+    """
     def __init__(self, env: gym.Env, gamma=1.0, epsilon=0.1, alpha=0.1, feature_dim=8, feature_function=None):
         self.feature_dim = feature_dim
         self.feature_function = feature_function if feature_function is not None else self.default_feature_function

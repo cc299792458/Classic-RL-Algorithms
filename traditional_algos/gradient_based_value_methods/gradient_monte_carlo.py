@@ -24,7 +24,7 @@ class FunctionApproximator:
         raise NotImplementedError("The print_parameters method must be implemented by subclasses.")
 
 class GradientMonteCarlo(MonteCarlo):
-    """Gradient Monte Carlo with General Function Approximation"""
+    """Gradient Monte Carlo with State Aggregation"""
 
     def __init__(self, env: gym.Env, gamma=1.0, alpha=0.01, approximation_function: FunctionApproximator = None):
         self.alpha = alpha

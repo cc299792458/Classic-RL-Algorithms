@@ -1,1 +1,3 @@
 **Policy Gradient** is a reinforcement learning algorithm that optimizes policies directly by computing gradients of the expected reward with respect to the policy parameters. Unlike value-based methods, which estimate action values, policy gradient methods learn a probability distribution over actions, allowing them to handle environments with continuous or stochastic actions. The gradient ascent approach is used to update the policy in the direction that maximizes the expected cumulative reward. Popular variations include REINFORCE and actor-critic methods.
+
+TODO: Add more complex function approximators, like using the feature construction

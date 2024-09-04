@@ -1,3 +1,5 @@
 **Use REINFORCE to solve Corridor Gridworld**
 
 REINFORCE utilizes the Monte Carlo method, which leads to high variance. When solving this problem, I initially couldn't train the model stably. Later, during debugging, I realized that I needed to reduce the alpha value. The current alpha is the largest value that allows for stable training.
+
+Additionally, avoid arbitrarily setting initial values for the approximate function’s weights, as they may need to be adjusted in tandem with the learning rate and other parameters. During my experiments, I initially set a specific value for the weights and found that the learning rate was too low, rendering the training ineffective. I then set the initial weights to 0 and gradually found a suitable alpha. Building on this, I set the initial weights to 2.0 and -2.0 to better observe how the weights change throughout the training process.
