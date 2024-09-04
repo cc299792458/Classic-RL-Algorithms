@@ -1,3 +1,3 @@
-**Gradient Base Value Methods** are designed to handle environments with a large number of states by using function approximation techniques. Instead of storing value estimates for each state individually, they generalize across states by using parameterized functions. This, however, can introduce new challenges, such as bias issues, the problem of updating multiple states simultaneously, and potential non-convergence problems.
+**Gradient Base Value Methods** are designed to handle environments with a large number of states by using function approximation techniques. Instead of storing value estimates for each state individually, they generalize across states by using parameterized functions. This, however, can introduce new challenges, such as the problem of updating multiple states at one time, and potential non-convergence problems.
 
 TODO: Add more complex function approximators, like using the feature construction
