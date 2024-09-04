@@ -40,7 +40,7 @@ class DynaQWithLogging(DynaQ):
                 total_reward += reward  # Accumulate rewards for this episode
 
                 # Record cumulative reward at every timestep
-                cumulative_rewards.append((timesteps, total_reward))
+                cumulative_rewards.append(total_reward)
 
         return cumulative_rewards
     
@@ -60,7 +60,7 @@ class DynaQPlusWithLogging(DynaQPlus):
                 done = terminated or truncated
 
                 # Update Q function and model
-                self.update_q_function(state, action, reward, next_state)
+                self.update_q_function(state, action, reward, next_state, add_bonus=False, is_real_interaction=True)
                 self.model[(state, action)] = (next_state, reward)
 
                 # Update policy
@@ -74,7 +74,7 @@ class DynaQPlusWithLogging(DynaQPlus):
                 total_reward += reward  # Accumulate rewards for this episode
 
                 # Record cumulative reward at every timestep
-                cumulative_rewards.append((timesteps, total_reward))
+                cumulative_rewards.append(total_reward)
 
         return cumulative_rewards
 
@@ -88,7 +88,7 @@ if __name__ == '__main__':
     width = 9
     original_walls = [(3, 0), (3, 1), (3, 2), (3, 3), (3, 4), (3, 5), (3, 6), (3, 7)]  # Initial wall positions
     new_walls = [(3, 1), (3, 2), (3, 3), (3, 4), (3, 5), (3, 6), (3, 7), (3, 8)]  # Walls after change
-    change_time_step = 1000
+    change_time_step = 2000
     start_position = (5, 3)
     goal_position = (0, 8)
 
@@ -106,12 +106,15 @@ if __name__ == '__main__':
     env.render()
 
     ##### Solve the Problem using DynaQ and DynaQPlus #####
-    total_timesteps = 3000  # Set the total timesteps limit
-    num_runs = 5
+    total_timesteps = 10000  # Set the total timesteps limit
+    num_runs = 50
 
     agents = {
         "DynaQ": DynaQWithLogging(env=env, gamma=0.95, epsilon=0.1, alpha=0.1, planning_steps=5),
-        # "DynaQPlus": DynaQPlusWithLogging(env=env, gamma=0.95, epsilon=0.1, alpha=0.1, planning_steps=5)
+        "DynaQ+ kappa=0.001": DynaQPlusWithLogging(env=env, gamma=0.95, epsilon=0.1, alpha=0.1, planning_steps=5, kappa=0.001),
+        "DynaQ+ kappa=0.01": DynaQPlusWithLogging(env=env, gamma=0.95, epsilon=0.1, alpha=0.1, planning_steps=5, kappa=0.01),
+        "DynaQ+ kappa=0.1": DynaQPlusWithLogging(env=env, gamma=0.95, epsilon=0.1, alpha=0.1, planning_steps=5, kappa=0.1),
+        "DynaQ+ kappa=1.0": DynaQPlusWithLogging(env=env, gamma=0.95, epsilon=0.1, alpha=0.1, planning_steps=5, kappa=1.0),
     }
 
     cumulative_rewards_results = {}
@@ -121,19 +124,19 @@ if __name__ == '__main__':
         all_cumulative_rewards = []
         with tqdm(total=num_runs, desc=f"{agent_name}") as pbar:
             for _ in range(num_runs):
-                env.reset(reset_timestep=True)
+                env.reset(reset_walls=True)
                 cumulative_rewards = agent.estimation_and_control(total_timesteps=total_timesteps)
-                all_cumulative_rewards.extend(cumulative_rewards)  # Accumulate rewards across runs
+                all_cumulative_rewards.append(cumulative_rewards)  # Append rewards for each run
                 pbar.update(1)
             
-        cumulative_rewards_results[agent_name] = all_cumulative_rewards
+        # Calculate the average cumulative rewards across all runs
+        cumulative_rewards_results[agent_name] = np.mean(all_cumulative_rewards, axis=0)
 
     ##### Plot Cumulative Rewards vs. Total Timesteps for DynaQ and DynaQPlus
     plt.figure(figsize=(12, 8))
 
     for agent_name, cumulative_rewards in cumulative_rewards_results.items():
-        timesteps, rewards = zip(*cumulative_rewards)
-        plt.plot(timesteps, rewards, label=agent_name)
+        plt.plot(range(total_timesteps), cumulative_rewards, label=agent_name)
 
     plt.xlabel('Total Timesteps')
     plt.ylabel('Cumulative Rewards')
@@ -142,6 +145,6 @@ if __name__ == '__main__':
     plt.grid(True)
 
     # Save and show the plot
-    plot_path = os.path.join(log_dir, 'block_maze_cumulative_rewards_vs_timesteps.png')
+    plot_path = os.path.join(log_dir, 'block_maze_avg_cumulative_rewards_vs_timesteps.png')
     plt.savefig(plot_path)
     plt.show()

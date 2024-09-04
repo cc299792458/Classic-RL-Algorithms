@@ -130,15 +130,18 @@ class DynamicMaze(DynaMaze):
         
         self.original_walls = original_walls if original_walls is not None else []
         self.new_walls = new_walls if new_walls is not None else []
+        self.initial_change_time_step = change_time_step
         self.change_time_step = change_time_step
         self.timestep = 0  # Track the current time step
 
-    def reset(self, reset_timestep=False):
+    def reset(self, reset_walls=False):
         """
         Reset the maze to its initial state.
         Optionally reset the timestep if reset_timestep is True.
         """
-        if reset_timestep:
+        if reset_walls:
+            self.change_time_step = self.initial_change_time_step
+            self.set_walls(walls=self.original_walls)
             self.timestep = 0  # Reset time step
         return super().reset()  # Call the parent reset method
 
@@ -151,8 +154,11 @@ class DynamicMaze(DynaMaze):
 
         # If it's time to change the walls, update the maze with new walls
         if self.timestep == self.change_time_step:
-            # print(f"Changing walls at timestep {self.timestep}")
-            self.set_walls(self.new_walls)
+            if self._state_to_xy(self.position) in self.new_walls:
+                self.change_time_step += 1
+            else:
+                # print(f"Changing walls at timestep {self.timestep}")
+                self.set_walls(self.new_walls)
 
         # Call the parent class's step function
         return super().step(action)

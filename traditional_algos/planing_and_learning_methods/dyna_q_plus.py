@@ -8,8 +8,6 @@ import gymnasium as gym
 from tqdm import tqdm
 from traditional_algos.planing_and_learning_methods import DynaQ
 
-# TODO: Why timesteps are different in the episode 0?
-
 class DynaQPlus(DynaQ):
     """
         DynaQ+ with an enhanced model, exploration bonus (only in simulations), and untried action consideration
@@ -25,7 +23,7 @@ class DynaQPlus(DynaQ):
         self.last_update_timestep = {}  # Reset the timestep tracking model
         self.total_timestep = 0  # Reset the total timestep counter
 
-    def update_q_function(self, state, action, reward, next_state, add_bonus=False):
+    def update_q_function(self, state, action, reward, next_state, add_bonus=False, is_real_interaction=True):
         # If this state-action pair is being updated for the first time, give a large bonus (only if add_bonus=True)
         if (state, action) not in self.last_update_timestep:
             timesteps_since_last_update = self.total_timestep  # First time being updated, use total_timestep as a large bonus
@@ -40,8 +38,9 @@ class DynaQPlus(DynaQ):
         td_error = reward + bonus + self.gamma * np.max(self.Q[next_state]) - self.Q[state][action]
         self.Q[state][action] += self.alpha * td_error
 
-        # Update the last update timestep for this (state, action) pair
-        self.last_update_timestep[(state, action)] = self.total_timestep
+        # Only update last update timestep if it's a real interaction with the environment
+        if is_real_interaction:
+            self.last_update_timestep[(state, action)] = self.total_timestep
 
     def simulate(self):
         # Perform `self.planning_steps` simulations using the stored model
@@ -61,8 +60,8 @@ class DynaQPlus(DynaQ):
             
             next_state, reward = self.model[(state, action)]
 
-            # Simulated updates include the exploration bonus
-            self.update_q_function(state, action, reward, next_state, add_bonus=True)
+            # Simulated updates include the exploration bonus, but do not update last_update_timestep
+            self.update_q_function(state, action, reward, next_state, add_bonus=True, is_real_interaction=False)
 
             # Improve policy based on the updated Q-function
             self.improve_policy(state)
@@ -79,7 +78,7 @@ class DynaQPlus(DynaQ):
                     done = terminated or truncated
 
                     # Update Q-function based on real environment interaction (no bonus)
-                    self.update_q_function(state, action, reward, next_state, add_bonus=False)
+                    self.update_q_function(state, action, reward, next_state, add_bonus=False, is_real_interaction=True)
 
                     # Store the experience in the model
                     self.model[(state, action)] = (next_state, reward)

@@ -7,6 +7,8 @@ import gymnasium as gym
 from tqdm import tqdm
 from utils.gym_utils import get_observation_shape
 
+# TODO: Why timesteps are different in the episode 0?
+
 class DynaQ:
     """
         DynaQ with a deterministic model
