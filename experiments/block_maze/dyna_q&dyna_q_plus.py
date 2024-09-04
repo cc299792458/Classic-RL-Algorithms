@@ -91,6 +91,17 @@ if __name__ == '__main__':
     change_time_step = 2000
     start_position = (5, 3)
     goal_position = (0, 8)
+    total_timesteps = 10000  # Set the total timesteps limit
+
+    # Simpler Maze setup for debug
+    # height = 3
+    # width = 4
+    # original_walls = [(1, 0), (1, 1), (1, 2)]  # Initial wall positions
+    # new_walls = [(1, 1), (1, 2), (1, 3)]  # Walls after change
+    # change_time_step = 200
+    # start_position = (2, 1)
+    # goal_position = (0, 3)
+    # total_timesteps = 1000  # Set the total timesteps limit
 
     print("The Block Maze environment")
     env = DynamicMaze(
@@ -106,15 +117,15 @@ if __name__ == '__main__':
     env.render()
 
     ##### Solve the Problem using DynaQ and DynaQPlus #####
-    total_timesteps = 10000  # Set the total timesteps limit
     num_runs = 50
 
     agents = {
         "DynaQ": DynaQWithLogging(env=env, gamma=0.95, epsilon=0.1, alpha=0.1, planning_steps=5),
-        "DynaQ+ kappa=0.001": DynaQPlusWithLogging(env=env, gamma=0.95, epsilon=0.1, alpha=0.1, planning_steps=5, kappa=0.001),
-        "DynaQ+ kappa=0.01": DynaQPlusWithLogging(env=env, gamma=0.95, epsilon=0.1, alpha=0.1, planning_steps=5, kappa=0.01),
-        "DynaQ+ kappa=0.1": DynaQPlusWithLogging(env=env, gamma=0.95, epsilon=0.1, alpha=0.1, planning_steps=5, kappa=0.1),
-        "DynaQ+ kappa=1.0": DynaQPlusWithLogging(env=env, gamma=0.95, epsilon=0.1, alpha=0.1, planning_steps=5, kappa=1.0),
+        "DynaQ+ kappa=1e-4": DynaQPlusWithLogging(env=env, gamma=0.95, epsilon=0.1, alpha=0.1, planning_steps=5, kappa=1e-4),
+        "DynaQ+ kappa=1e-3": DynaQPlusWithLogging(env=env, gamma=0.95, epsilon=0.1, alpha=0.1, planning_steps=5, kappa=1e-3),
+        "DynaQ+ kappa=1e-2": DynaQPlusWithLogging(env=env, gamma=0.95, epsilon=0.1, alpha=0.1, planning_steps=5, kappa=1e-2),
+        "DynaQ+ kappa=1e-1": DynaQPlusWithLogging(env=env, gamma=0.95, epsilon=0.1, alpha=0.1, planning_steps=5, kappa=1e-1),
+        "DynaQ+ kappa=1e-0": DynaQPlusWithLogging(env=env, gamma=0.95, epsilon=0.1, alpha=0.1, planning_steps=5, kappa=1.0),
     }
 
     cumulative_rewards_results = {}

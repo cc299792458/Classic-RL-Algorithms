@@ -1,6 +1,9 @@
 **Use Dyna Q and Dyna Q+ to solve Blocked Maze**
 
-An interesting issue in the Block Maze environment is that the agent may end up at the position of a new wall right when the walls are about to be updated. To avoid this, I implemented a delay in the update until the agent moves out of the new wall's position.
+In this experiment, it can be observed that Dyna Q+ consistently outperforms Dyna Q when $\kappa$ is set within a broad range. Interestingly, setting $\kappa$ to values such as 1e-0 and 1e-4 achieved better results, while the intermediate values yielded slightly weaker performance. The specific reason for this phenomenon has not yet been fully investigated.
+
+Additionally, I initially made an error by sampling from all states instead of just the encountered states during the planning part, which caused Dyna Q+ to perform worse than Dyna Q. The underlying reason for this issue is still under exploration.
+
+An interesting situation in the Blocked Maze environment is that the agent may find itself at the position of a new wall just as the walls are about to be updated. To handle this, I implemented a delay in updating the walls until the agent moves out of the new wall's position.
 
 TODO: Exercise 8.4 in the RL Book.
-

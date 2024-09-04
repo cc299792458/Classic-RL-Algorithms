@@ -49,14 +49,8 @@ class DynaQPlus(DynaQ):
                 continue
 
             # Randomly pick a state and action
-            state = self.env.choose_random_state()
-            action = np.random.choice(np.arange(self.num_action))
-
-            # Check if this (state, action) pair is in the model, if not initialize it
-            if (state, action) not in self.model:
-                next_state = state  # Initial assumption: leads back to the same state
-                reward = 0  # Initial assumption: reward is zero
-                self.model[(state, action)] = (next_state, reward)
+            state, action = list(self.model.keys())[np.random.randint(len(self.model))]
+            # action = np.random.choice(np.arange(self.num_action))
             
             next_state, reward = self.model[(state, action)]
 
@@ -82,6 +76,13 @@ class DynaQPlus(DynaQ):
 
                     # Store the experience in the model
                     self.model[(state, action)] = (next_state, reward)
+                    # Initialize other actions for the current state if they haven't been tried yet
+                    for a in range(self.num_action):
+                        # Check if this (state, action) pair is in the model, if not initialize it
+                        if (state, a) not in self.model:
+                            next_state = state  # Initial assumption: leads back to the same state
+                            reward = 0  # Initial assumption: reward is zero
+                            self.model[(state, a)] = (next_state, reward)
 
                     # Improve policy based on new Q values
                     self.improve_policy(state)
